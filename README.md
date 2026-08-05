@@ -1,8 +1,19 @@
 # ASTM-E2126-Backbone-Curve-Tool
 
-**ASTM-E2126-Backbone-Curve-Tool** is a Python-based graphical application for processing cyclic hysteresis test data and automatically generating backbone (envelope) curves, ASTM E2126 Equivalent Energy Elastic-Plastic (EEEP) bilinear idealizations, stiffness degradation curves, and energy dissipation plots. The application processes experimental displacement-force data stored in text files and produces engineering plots, CSV files, and summary reports.
+**ASTM-E2126-Backbone-Curve-Tool** is a Python-based graphical application for processing cyclic hysteresis test data and automatically generating backbone (envelope) curves, ASTM E2126 Equivalent Energy Elastic-Plastic (EEEP) bilinear idealizations, stiffness degradation curves, and energy dissipation plots. The application processes experimental displacement-force data stored in text files and produces engineering plots, CSV files, and summary reports. An overview of the software interface and its usage is available in the following video:
 
-## Workflow
+<p>
+  <strong>Cite this Tool:</strong>
+  <a href="https://doi.org/10.5281/zenodo.21805267">
+    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.21805267.svg" alt="DOI">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=Y899OlVM-wI">
+    <img src="https://img.youtube.com/vi/Y899OlVM-wI/maxresdefault.jpg" alt="ASTM-E2126-Backbone-Curve-Tool Video Overview" width="800">
+  </a>
+</p>
 
 The overall workflow implemented by **ASTM-E2126-Backbone-Curve-Tool** is illustrated **Figure 1**. Starting from cyclic hysteresis test data, the application automatically extracts backbone curves, computes ASTM E2126 Equivalent Energy Elastic-Plastic (EEEP) bilinear idealizations, evaluates engineering properties, and exports publication-ready figures and CSV reports.
 
