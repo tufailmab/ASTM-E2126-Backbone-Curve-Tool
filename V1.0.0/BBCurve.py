@@ -4,38 +4,7 @@ hysteresis data -- GUI VERSION. Units: displacement in mm, force in kN.
 
 This GUI wraps the ORIGINAL processing logic (backbone extraction,
 positive/negative/average branches, EEEP bilinear idealization, energy,
-stiffness, ductility, summary CSV) WITHOUT changing any of the underlying
-math or algorithms. Every processing function below is byte-for-byte
-identical in behavior to the original script.
-
-On top of that unchanged engine, this version provides a professional,
-single-plot engineering workstation interface (in the spirit of ETABS /
-SAP2000 / OriginPro):
-
-    - A branded header with app title/subtitle and developer credit
-    - A single large interactive plot viewer with:
-        Previous/Next specimen, specimen search, refresh, reset view,
-        auto-fit axes, zoom in/out, pan, crosshair cursor with live
-        mouse coordinates, click-to-inspect nearest data point,
-        grid/legend/marker toggles, adjustable line width & marker size,
-        a matplotlib style selector, quick-save, multi-format export
-        (PNG/SVG/PDF) with adjustable DPI, and copy-to-clipboard
-    - A live engineering information panel next to the plot that updates
-      automatically with the selected specimen's properties
-    - A searchable, sortable, filterable summary table with max/min
-      highlighting, row copy, CSV export of selected rows, and
-      double-click-to-view
-    - A dark, color-coded processing log (OK / FAIL / section headers)
-      with export-to-file
-    - A modal processing dialog with a determinate progress bar, elapsed
-      timer, live status, and cancel support
-    - Persistent user settings (last folders, recent folders, window
-      geometry, plot preferences) saved between sessions
-    - A Preferences dialog, recent-folder menus, keyboard shortcuts,
-      tooltips, right-click context menus, and a richer status bar
-
-To turn this into a standalone .exe later (e.g. with PyInstaller):
-    pyinstaller --onefile --windowed BBCurve_GUI.py
+stiffness, ductility, summary CSV).
 
 Requires: numpy, pandas, matplotlib  (tkinter ships with standard Python)
 
@@ -74,9 +43,8 @@ from tkinter import ttk, filedialog, messagebox, simpledialog
 # numpy >= 2.0 renamed trapz -> trapezoid; support both so this runs anywhere
 _trapezoid = getattr(np, "trapezoid", None) or np.trapz
 
-# --------------------------------------------------------------------------
-# OUTPUT FOLDER NAMES (same structure as the original script)
-# --------------------------------------------------------------------------
+# Output Folders Names
+
 BACKBONE_PLOTS_DIR = "All Backbone Curves-Plots"
 BACKBONE_CSVS_DIR = "All Backbone Curves-CSVs"
 PNA_PLOTS_DIR = "Positive-Negative-Average Plots"
@@ -102,12 +70,12 @@ PLOT_TYPES = [
     "Cumulative Energy Dissipation",
 ]
 
-# --------------------------------------------------------------------------
-# APP BRANDING / DEVELOPER INFO
-# --------------------------------------------------------------------------
+
+# App Branding & Developer Info
+
 APP_NAME = "Backbone Curve & Bilinear Idealization Tool"
 APP_SUBTITLE = "Cyclic Hysteresis Analysis Suite  \u2022  ASTM E2126 EEEP Method"
-APP_VERSION = "1.0"
+APP_VERSION = "1.0.0"
 
 DEVELOPER_NAME = "Tufail Mabood"
 DEVELOPER_GITHUB_URL = "https://github.com/tufailmab"
@@ -115,9 +83,8 @@ DEVELOPER_GITHUB_LABEL = "GitHub.com/tufailmab"
 DEVELOPER_WHATSAPP_1 = "+92 344 0907874"
 DEVELOPER_WHATSAPP_2 = "+92 340 0740460"
 
-# --------------------------------------------------------------------------
-# COLOR PALETTE (professional, engineering-software feel)
-# --------------------------------------------------------------------------
+# Color Pallete
+
 COLOR_BG = "#f2f4f7"
 COLOR_HEADER_BG = "#12233d"
 COLOR_HEADER_ACCENT = "#2f8fd6"
@@ -140,9 +107,8 @@ COLOR_MIN_HL = "#ffd6d6"
 
 FONT_FAMILY = "Segoe UI"
 
-# --------------------------------------------------------------------------
-# SETTINGS PERSISTENCE (remembers folders, window size, plot preferences)
-# --------------------------------------------------------------------------
+# Setting Persistence
+
 SETTINGS_PATH = os.path.join(os.path.expanduser("~"), ".bbcurve_gui_settings.json")
 
 DEFAULT_SETTINGS = {
@@ -186,9 +152,7 @@ def save_settings(settings):
         pass  # persistence is a convenience, never fatal
 
 
-# ==========================================================================
-#         ORIGINAL PROCESSING LOGIC (UNCHANGED -- DO NOT MODIFY MATH)
-# ==========================================================================
+# Logic
 
 def find_txt_files(input_dir):
     candidates = sorted(f for f in glob.glob(os.path.join(input_dir, "*.txt")))
@@ -687,9 +651,7 @@ def process_one_file(txt_path, dirs):
     return row, plot_data
 
 
-# ==========================================================================
-#                         SMALL GUI UTILITY HELPERS
-# ==========================================================================
+# GUI Utility Helper
 
 class ToolTip:
     """Lightweight tooltip: shows a small popup label when the mouse
@@ -766,9 +728,7 @@ def fmt_num(v, digits=4):
         return "\u2013"
 
 
-# ==========================================================================
-#                                   GUI
-# ==========================================================================
+# GUI
 
 class BackboneGUI(tk.Tk):
 
@@ -836,9 +796,7 @@ class BackboneGUI(tk.Tk):
         self._build_shortcuts()
         self.after(150, self._poll_log_queue)
 
-    # ------------------------------------------------------------------
-    # STYLE
-    # ------------------------------------------------------------------
+    # Style
     def _configure_style(self):
         style = ttk.Style(self)
         try:
@@ -913,9 +871,7 @@ class BackboneGUI(tk.Tk):
             "font.size": 10,
         })
 
-    # ------------------------------------------------------------------
-    # MENU BAR
-    # ------------------------------------------------------------------
+    # Menu Bar
     def _build_menu(self):
         menubar = tk.Menu(self)
 
@@ -941,7 +897,7 @@ class BackboneGUI(tk.Tk):
         self.file_menu.add_command(label="Exit\tCtrl+Q", command=self._on_close)
         menubar.add_cascade(label="File", menu=self.file_menu)
 
-        # ---- View ----
+        # View
         view_menu = tk.Menu(menubar, tearoff=0)
         view_menu.add_checkbutton(label="Show Grid\tCtrl+G", variable=self.grid_var,
                                    command=self._render_plot)
@@ -964,14 +920,14 @@ class BackboneGUI(tk.Tk):
         view_menu.add_command(label="Clear Processing Log", command=self._clear_log)
         menubar.add_cascade(label="View", menu=view_menu)
 
-        # ---- Tools ----
+        # Tools
         tools_menu = tk.Menu(menubar, tearoff=0)
         tools_menu.add_command(label="Save Current Plot...\tCtrl+S", command=self._save_plot)
         tools_menu.add_command(label="Export Current Plot...\tCtrl+E", command=self._export_plot_dialog)
         tools_menu.add_command(label="Copy Plot to Clipboard\tCtrl+C", command=self._copy_plot_to_clipboard)
         menubar.add_cascade(label="Tools", menu=tools_menu)
 
-        # ---- Help ----
+        # Help
         help_menu = tk.Menu(menubar, tearoff=0)
         help_menu.add_command(label="Keyboard Shortcuts", command=self._show_shortcuts)
         help_menu.add_command(label="About This Tool", command=self._show_about)
@@ -1037,9 +993,7 @@ class BackboneGUI(tk.Tk):
 
         ttk.Button(win, text="Close", command=win.destroy).pack(pady=(16, 20))
 
-    # ------------------------------------------------------------------
-    # KEYBOARD SHORTCUTS
-    # ------------------------------------------------------------------
+    # Keyboard Shortcuts
     def _build_shortcuts(self):
         self.bind_all("<Control-o>", lambda e: self._browse_input())
         self.bind_all("<Control-O>", lambda e: self._browse_output())
@@ -1081,9 +1035,7 @@ class BackboneGUI(tk.Tk):
             return
         self._next_specimen()
 
-    # ------------------------------------------------------------------
-    # LAYOUT
-    # ------------------------------------------------------------------
+    # Layout
     def _build_layout(self):
         # ---- Branded header ----
         header = ttk.Frame(self, style="Header.TFrame", padding=(18, 14))
@@ -1103,7 +1055,7 @@ class BackboneGUI(tk.Tk):
         ttk.Label(credit_box, text=DEVELOPER_GITHUB_LABEL, style="HeaderSub.TLabel",
                   font=(FONT_FAMILY, 9)).pack(anchor="e")
 
-        # ---- Folder selection + run button ----
+        # Folder selection + run button
         top = ttk.Frame(self, padding=(14, 12))
         top.pack(side="top", fill="x")
 
@@ -1133,7 +1085,7 @@ class BackboneGUI(tk.Tk):
 
         top.columnconfigure(1, weight=1)
 
-        # ---- Notebook: Viewer / Log / Summary ----
+        # Notebook: Viewer / Log / Summary
         nb = ttk.Notebook(self)
         nb.pack(fill="both", expand=True, padx=14, pady=(4, 8))
         self.notebook = nb
@@ -1149,7 +1101,7 @@ class BackboneGUI(tk.Tk):
         self._build_log_tab()
         self._build_summary_tab()
 
-        # ---- Status bar ----
+        # Status bar
         status_bar = ttk.Frame(self, style="Status.TLabel")
         status_bar.pack(side="bottom", fill="x")
         ttk.Label(status_bar, textvariable=self.status_var, style="Status.TLabel",
@@ -1157,7 +1109,7 @@ class BackboneGUI(tk.Tk):
         ttk.Label(status_bar, textvariable=self.coord_var, style="Status.TLabel",
                   relief="sunken", anchor="w", padding=6, width=32).pack(side="right")
 
-        # ---- Footer with developer contact info ----
+        # Footer with developer contact info
         footer = ttk.Frame(self, style="Footer.TFrame", padding=(14, 6))
         footer.pack(side="bottom", fill="x")
 
@@ -1175,9 +1127,9 @@ class BackboneGUI(tk.Tk):
         ttk.Label(contact_box, text=f"WhatsApp: {DEVELOPER_WHATSAPP_1}  |  {DEVELOPER_WHATSAPP_2}",
                   style="Footer.TLabel").pack(side="left")
 
-    # ------------------------------------------------------------------
-    # VIEWER TAB -- ONE LARGE INTERACTIVE PLOT + ENGINEERING INFO PANEL
-    # ------------------------------------------------------------------
+
+    # Viewer Tab
+
     def _build_viewer_tab(self):
         # ---- Row 1: specimen navigation / search / plot type ----
         nav = ttk.Frame(self.viewer_tab, style="Toolbar.TFrame", padding=6)
@@ -1219,7 +1171,7 @@ class BackboneGUI(tk.Tk):
         refresh_btn.pack(side="right")
         add_tooltip(refresh_btn, "Redraw the current plot (F5)")
 
-        # ---- Row 2: view / style controls ----
+        # view / style controls
         view_bar = ttk.Frame(self.viewer_tab, style="Toolbar.TFrame", padding=(6, 2))
         view_bar.pack(side="top", fill="x")
 
@@ -1276,7 +1228,7 @@ class BackboneGUI(tk.Tk):
         style_combo.pack(side="left", padx=2)
         style_combo.bind("<<ComboboxSelected>>", lambda e: self._apply_style())
 
-        # ---- Row 3: save / export / clipboard ----
+        # save / export / clipboard
         export_bar = ttk.Frame(self.viewer_tab, style="Toolbar.TFrame", padding=(6, 2))
         export_bar.pack(side="top", fill="x")
 
@@ -1301,7 +1253,7 @@ class BackboneGUI(tk.Tk):
         dpi_combo.pack(side="left", padx=2)
         add_tooltip(dpi_combo, "High-DPI export resolution")
 
-        # ---- Main body: plot (left) + engineering info panel (right) ----
+        # Main body: plot (left) + engineering info panel (right)
         body = ttk.Panedwindow(self.viewer_tab, orient="horizontal")
         body.pack(fill="both", expand=True)
 
@@ -1417,9 +1369,7 @@ class BackboneGUI(tk.Tk):
         self.log_text.tag_configure("header", foreground=COLOR_LOG_HEADER, font=("Consolas", 10, "bold"))
         self.log_text.tag_configure("dim", foreground="#6b7c93")
 
-    # ------------------------------------------------------------------
-    # SUMMARY TAB
-    # ------------------------------------------------------------------
+    # Summary Tab
     def _build_summary_tab(self):
         container = ttk.Frame(self.summary_tab, padding=8)
         container.pack(fill="both", expand=True)
@@ -1485,9 +1435,7 @@ class BackboneGUI(tk.Tk):
         finally:
             self.summary_menu.grab_release()
 
-    # ------------------------------------------------------------------
-    # FOLDER BROWSING / RECENT FOLDERS
-    # ------------------------------------------------------------------
+    # Folder Browsing
     def _browse_input(self):
         folder = filedialog.askdirectory(title="Select folder containing your hysteresis TXT files",
                                           initialdir=self.input_dir.get() or os.path.expanduser("~"))
@@ -1543,9 +1491,7 @@ class BackboneGUI(tk.Tk):
             else:
                 subprocess.Popen(["xdg-open", out])
 
-    # ------------------------------------------------------------------
-    # PREFERENCES DIALOG
-    # ------------------------------------------------------------------
+    # Preference Dialog
     def _show_preferences(self):
         win = tk.Toplevel(self)
         win.title("Preferences")
@@ -1625,9 +1571,9 @@ class BackboneGUI(tk.Tk):
         ttk.Button(btn_row, text="Apply", style="Accent.TButton", command=apply_and_close).pack(
             side="right", padx=6)
 
-    # ------------------------------------------------------------------
-    # PROCESSING (runs in a background thread so the GUI doesn't freeze)
-    # ------------------------------------------------------------------
+    
+    # Processing (runs in a background thread so the GUI doesn't freeze)
+    
     def _start_processing(self):
         input_dir = self.input_dir.get().strip()
         output_dir = self.output_dir.get().strip()
@@ -1815,9 +1761,9 @@ class BackboneGUI(tk.Tk):
         self.log_queue.put(("__STATS__", len(succeeded), len(failed), n_total, elapsed))
         self.log_queue.put(("__DONE__", results, summary_rows))
 
-    # ------------------------------------------------------------------
-    # LOG QUEUE POLLING (safe cross-thread GUI updates)
-    # ------------------------------------------------------------------
+
+    # Log queue plotting (safe cross-thread GUI updates)
+
     def _poll_log_queue(self):
         try:
             while True:
@@ -1907,9 +1853,7 @@ class BackboneGUI(tk.Tk):
             messagebox.showwarning("Nothing processed",
                                     "No specimens were processed successfully. Check the Processing Log tab.")
 
-    # ------------------------------------------------------------------
-    # SUMMARY TABLE
-    # ------------------------------------------------------------------
+    # Summary Table
     def _populate_summary_table(self, summary_rows):
         self.summary_tree.delete(*self.summary_tree.get_children())
         self.sort_state = {}
@@ -2072,9 +2016,7 @@ class BackboneGUI(tk.Tk):
         else:
             messagebox.showinfo("Not available", f"No plot data cached for specimen '{stem}'.")
 
-    # ------------------------------------------------------------------
-    # SPECIMEN NAVIGATION / SEARCH
-    # ------------------------------------------------------------------
+    # Specimen Navigation
     def _prev_specimen(self):
         stems = list(self.specimen_combo["values"])
         if not stems:
@@ -2120,9 +2062,7 @@ class BackboneGUI(tk.Tk):
         else:
             messagebox.showinfo("Search", f"No specimen found matching '{self.search_var.get()}'.")
 
-    # ------------------------------------------------------------------
-    # PLOT STYLE / VIEW CONTROLS
-    # ------------------------------------------------------------------
+    # View Controlls
     def _apply_style(self):
         style = self.style_var.get()
         try:
@@ -2221,9 +2161,7 @@ class BackboneGUI(tk.Tk):
                                               edgecolors="#ff2d55", linewidths=2, zorder=20)
         self.canvas.draw_idle()
 
-    # ------------------------------------------------------------------
-    # SAVE / EXPORT / CLIPBOARD
-    # ------------------------------------------------------------------
+    # Save / Export / Clipboard
     def _default_export_name(self, ext):
         stem = self.specimen_var.get() or "plot"
         plot_type = self.plottype_var.get().replace(" ", "_").replace("/", "-")
@@ -2331,9 +2269,7 @@ class BackboneGUI(tk.Tk):
         except Exception as e:
             messagebox.showerror("Copy failed", f"Could not copy the plot:\n{e}")
 
-    # ------------------------------------------------------------------
-    # PLOT VIEWER (redraws live from stored arrays -- no PNG re-reading)
-    # ------------------------------------------------------------------
+    # Plot Viewer
     def _draw_placeholder(self):
         self.ax.clear()
         self.ax.text(0.5, 0.5, "Process TXT files to view plots here",
@@ -2495,9 +2431,7 @@ class BackboneGUI(tk.Tk):
         self.fig.tight_layout()
         self.canvas.draw_idle()
 
-    # ------------------------------------------------------------------
-    # SHUTDOWN -- PERSIST SETTINGS
-    # ------------------------------------------------------------------
+    # Shutdown / Persist Settings
     def _on_close(self):
         try:
             self.settings["last_input_dir"] = self.input_dir.get().strip()
