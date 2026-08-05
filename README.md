@@ -99,20 +99,6 @@ The software automatically creates organized folders containing:
 
 ---
 
-## File Information
-
-| Item | Description |
-|------|-------------|
-| **Script Name** | BBCurve.py |
-| **Repository** | ASTM-E2126-Backbone-Curve-Tool |
-| **Language** | Python |
-| **Input Format** | TXT |
-| **Output Formats** | CSV, PNG, PDF, SVG |
-| **GUI Framework** | Tkinter |
-| **Plotting Library** | Matplotlib |
-
----
-
 ## Usage Instructions
 
 1. Export cyclic hysteresis data as **TXT** files.
@@ -139,24 +125,6 @@ Process All TXT Files
 6. Review results using the interactive plot viewer.
 
 7. Export figures and reports if required.
-
----
-
-## Requirements
-
-The following software is required:
-
-- Python 3.x
-- NumPy
-- Pandas
-- Matplotlib
-- Tkinter (included with standard Python)
-
-Install the required Python packages using:
-
-```bash
-pip install numpy pandas matplotlib
-```
 
 ---
 
@@ -188,9 +156,7 @@ This software is intended for:
 
 ## License
 
-This project is licensed under the **MIT License**.
-
-You are free to use, modify, and distribute this software under the terms of the license.
+This project is licensed under the **MIT License**. You are free to use, modify, and distribute this software under the terms of the license.
 
 ---
 
