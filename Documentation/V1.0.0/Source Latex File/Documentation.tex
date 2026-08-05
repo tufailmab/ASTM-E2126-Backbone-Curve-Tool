@@ -1,0 +1,2060 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{microtype}
+\usepackage{seqsplit}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{adjustbox}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{esint}
+\usepackage{physics}
+\usepackage{siunitx}
+
+% Page styling
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textit{Backbone Curve \& Bilinear Idealization Tool}}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Section formatting
+\titleformat{\section}{\large\bfseries\sffamily}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\sffamily}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape\sffamily}{\thesubsubsection}{1em}{}
+
+\emergencystretch=2.5em
+\sloppy
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  columns=fullflexible,
+  frame=single,
+  backgroundcolor=\color{gray!8},
+  keywordstyle=\color{blue!60!black}\bfseries,
+  commentstyle=\color{gray!60!black}\itshape,
+  showstringspaces=false,
+  literate={-}{-}1 {~}{~}1
+}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  citecolor=blue!50!black,
+  urlcolor=blue!50!black
+}
+
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[section]
+
+\begin{document}
+
+% ====================================================================
+% TITLE PAGE
+% ====================================================================
+\begin{titlepage}
+\centering
+
+\vspace*{2cm}
+
+% Main title
+{\Huge \textbf{Backbone Curve \&}}\\[0.3cm]
+{\Huge \textbf{Bilinear Idealization Tool}}\\[0.5cm]
+
+% Subtitle
+{\Large \textcolor{blue!60!black}{A Comprehensive Cyclic Hysteresis Analysis Suite}}\\[0.3cm]
+{\large \textcolor{blue!40!black}{ASTM E2126 EEEP Method Implementation}}
+
+\vspace{1.5cm}
+
+% Decorative line
+\rule{8cm}{1pt}\\[0.3cm]
+{\large \textcolor{blue!40!black}{Graphical User Interface Application}}\\
+\rule{8cm}{1pt}
+
+\vspace{2cm}
+
+% Developer section
+{\large \textbf{Developed By}}\\[0.5cm]
+{\Huge \textcolor{blue!60!black}{Tufail Mabood}}
+
+\vspace{0.5cm}
+{\large UET Peshawar}
+
+\vspace{1.5cm}
+
+% Repository and DOI
+\begin{minipage}{0.7\textwidth}
+\centering
+\vspace{0.3cm}
+\begin{tabular}{r l}
+\textbf{Repository:} & \href{https://github.com/tufailmab/ASTM-E2126-Backbone-Curve-Tool}{github.com/tufailmab/ASTM-E2126-Backbone-Curve-Tool} \\[0.3em]
+\textbf{DOI:} & \href{https://zenodo.org/records/21805267}{10.5281/zenodo.21805267} \\[0.3em]
+\textbf{License:} & MIT License \\
+\end{tabular}
+\vspace{0.3cm}
+\end{minipage}
+
+\vfill
+
+% Version and date
+{\large \textbf{Version 1.0}}\\[0.2cm]
+{\large August 2026}
+
+\vspace{1cm}
+
+% Footer text
+{\small \textcolor{gray}{Open-source Python application for structural engineering analysis}}
+
+\end{titlepage}
+
+% ====================================================================
+% TABLE OF CONTENTS
+% ====================================================================
+\tableofcontents
+\newpage
+
+% ====================================================================
+% LIST OF TABLES
+% ====================================================================
+\listoftables
+\newpage
+
+% ====================================================================
+% CHAPTER 1: INTRODUCTION
+% ====================================================================
+\section{Introduction}
+
+\subsection{Background and Motivation}
+
+The analysis of cyclic hysteresis behaviour is fundamental to understanding the seismic performance of structural components subjected to earthquake loading. Reinforced concrete and steel elements, when exposed to cyclic loading, exhibit complex nonlinear responses that are characterized by several distinct phenomena. These include the formation of hysteresis loops which represent the energy dissipation capacity of the structure, progressive stiffness degradation with increasing number of cycles, strength degradation due to cumulative damage, and pinching effects which manifest as a narrowing of the hysteresis loops. The backbone curve, which represents the envelope of the hysteresis loops, is particularly important because it provides a simplified yet accurate representation of the structural behaviour that can be used for performance-based seismic design, capacity assessment of existing structures, calibration of numerical models, development of simplified analysis methods, and quality control in testing programs.
+
+\subsection{The ASTM E2126 EEEP Method}
+
+The Equivalent Energy Elastic-Plastic (EEEP) method, standardized in ASTM E2126, provides a systematic and rigorous approach for characterizing the cyclic behaviour of structural components. This method has gained widespread acceptance in the structural engineering community due to its theoretical foundation and practical applicability. The method involves several key steps: first, extracting the backbone curve from the cyclic response data; second, determining the initial stiffness \(K_e\) which represents the elastic behaviour; third, identifying the yield point \((D_y, F_y)\) using equal energy principles that ensure the idealized model preserves the energy dissipation capacity; fourth, locating the ultimate point \((D_u, F_u)\) which defines the deformation capacity; fifth, calculating the displacement ductility \(\mu = D_u / D_y\) which is a measure of the structure's ability to deform beyond yielding; and finally, evaluating energy dissipation and stiffness degradation across loading cycles.
+
+The fundamental principle of the EEEP method is that the area under the actual backbone curve up to the ultimate point must equal the area under the idealized elastic-perfectly-plastic curve, as expressed in Equation~\ref{eq:eeep_principle}. This equal energy principle is of paramount importance because it ensures that the idealized model preserves the energy dissipation capacity of the actual system, which is crucial for seismic performance assessment.
+
+\begin{equation}
+\int_0^{D_u} F_{\text{actual}}(D) \, dD = \int_0^{D_u} F_{\text{idealized}}(D) \, dD
+\label{eq:eeep_principle}
+\end{equation}
+
+\subsection{Scope and Objectives}
+
+This document provides comprehensive technical documentation for the \textbf{Backbone Curve \& Bilinear Idealization Tool}, a sophisticated Python-based GUI application that implements the complete ASTM E2126 EEEP methodology. The primary objectives of this documentation are to describe the software architecture and design principles, document all mathematical formulations and algorithms in detail, provide comprehensive usage instructions for both novice and advanced users, explain the output generation and interpretation, serve as a reference for developers and users, and facilitate quality assurance and validation of results.
+
+\subsection{Key Features}
+
+The application provides a comprehensive set of professional-grade features that are summarized in Table~\ref{tab:features}. These features have been carefully designed to meet the needs of structural engineers, researchers, and educators working with cyclic test data.
+
+\begin{table}[h]
+\centering
+\caption{Application Key Features}\label{tab:features}
+\begin{tabular}{p{5cm}p{10cm}}
+\toprule
+\textbf{Feature Category} & \textbf{Description} \\
+\midrule
+Batch Processing & Automatic processing of multiple specimens in a single operation, significantly reducing analysis time \\
+Interactive Visualization & Professional-quality plots with zoom, pan, and data inspection capabilities \\
+Comprehensive Analysis & Full implementation of the EEEP method including all ASTM E2126 requirements \\
+Data Export & Multiple formats for plots (PNG, SVG, PDF) and tabular data (CSV) \\
+User-friendly Interface & ETABS/SAP2000-style engineering workstation with intuitive navigation \\
+Cross-platform & Works seamlessly on Windows, macOS, and Linux operating systems \\
+Real-time Feedback & Live processing log with color-coded status for immediate error detection \\
+Data Inspection & Click-to-inspect nearest data points with coordinate display \\
+Persistent Settings & Remembers user preferences between sessions for enhanced productivity \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ====================================================================
+% CHAPTER 2: THEORETICAL BACKGROUND
+% ====================================================================
+\section{Theoretical Background}
+
+\subsection{Structural Dynamics and Hysteresis}
+
+The dynamic response of a structure under cyclic loading can be described by the well-known equation of motion presented in Equation~\ref{eq:motion}. This second-order differential equation governs the behaviour of single-degree-of-freedom systems and forms the basis for understanding structural response under dynamic loading conditions.
+
+\begin{equation}
+M\ddot{u}(t) + C\dot{u}(t) + R(u(t)) = F(t)
+\label{eq:motion}
+\end{equation}
+
+In this equation, the mass matrix \(M\) represents the inertial properties of the structure, the damping matrix \(C\) accounts for energy dissipation mechanisms, the restoring force function \(R(u)\) describes the nonlinear force-displacement relationship, and the applied load \(F(t)\) represents the external forcing function. The displacement response \(u(t)\) is the unknown quantity to be determined.
+
+The restoring force function \(R(u)\) is inherently nonlinear and exhibits hysteresis, meaning that the force-displacement relationship depends on the entire loading history rather than just the current displacement. This path-dependent behaviour is captured by Equation~\ref{eq:restoring}, which decomposes the restoring force into elastic and plastic components.
+
+\begin{equation}
+R(u) = R_{\text{el}}(u) + R_{\text{pl}}(u, \text{history})
+\label{eq:restoring}
+\end{equation}
+
+The elastic component \(R_{\text{el}}(u)\) represents the recoverable deformation that disappears upon unloading, while the plastic component \(R_{\text{pl}}(u, \text{history})\) represents the permanent deformation that accumulates progressively with each loading cycle. This decomposition is fundamental to understanding the cyclic behaviour of structures and forms the basis for many simplified analysis methods.
+
+\subsection{Hysteresis Loop Characteristics}
+
+A typical hysteresis loop exhibits several key characteristics that are essential for understanding structural behaviour under cyclic loading. These characteristics are summarized in Table~\ref{tab:hysteresis_chars}, which provides a comprehensive overview of the phenomena observed in cyclic testing.
+
+\begin{table}[h]
+\centering
+\caption{Hysteresis Loop Characteristics}\label{tab:hysteresis_chars}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Characteristic} & \textbf{Description} \\
+\midrule
+Elastic loading & Initial linear response characterized by the initial stiffness \(K_e\), representing the undamaged state \\
+Yielding & Onset of nonlinear behaviour at the yield point \((D_y, F_y)\), marking the transition from elastic to plastic response \\
+Plastic deformation & Permanent deformation that remains after unloading, representing accumulated damage \\
+Energy dissipation & Area enclosed by the loop, calculated as \(E = \oint F \, dD\), representing the energy absorbed per cycle \\
+Stiffness degradation & Progressive reduction in slope with increasing cycles, reflecting cumulative damage \\
+Bauschinger effect & Strength reduction in reverse loading due to the reorientation of internal stresses \\
+Pinching & Narrowing of the loop due to crack opening and closing mechanisms \\
+Strength degradation & Progressive reduction in peak force with increasing cycles \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The energy dissipated in a single cycle is of particular importance for seismic analysis, as it represents the energy absorption capacity of the structure. This energy is given by the area enclosed by the hysteresis loop, as expressed in Equation~\ref{eq:cycle_energy}. The integration is performed over a complete cycle, starting and ending at the same point on the loop.
+
+\begin{equation}
+E_{\text{cycle}} = \oint_{\text{cycle}} F(D) \, dD
+\label{eq:cycle_energy}
+\end{equation}
+
+\subsection{Backbone Curve Theory}
+
+The backbone curve represents the envelope of the hysteresis loops and is defined as the maximum force attained at each displacement level. This concept is fundamental to the EEEP method and provides a simplified representation of the cyclic response. The formal definition of the backbone curve is given in Equation~\ref{eq:backbone_def}, which states that for each displacement, the backbone force is the maximum force achieved across all cycles.
+
+\begin{equation}
+F_{\text{backbone}}(D) = \max_{\text{cycles}} \{ F_{\text{cycle}}(D) \}
+\label{eq:backbone_def}
+\end{equation}
+
+More formally, for a set of cycles \(C_1, C_2, \ldots, C_n\), each with its own force-displacement relationship \(F_i(D)\), the backbone curve is expressed in Equation~\ref{eq:backbone_formal}. This mathematical formulation ensures that the backbone curve truly represents the outermost bounds of the cyclic response.
+
+\begin{equation}
+F_{\text{backbone}}(D) = \max\{ F_i(D) \mid i = 1, \ldots, n \}
+\label{eq:backbone_formal}
+\end{equation}
+
+The backbone curve typically consists of three distinct regions: the ascending branch from the origin to the peak point, which represents the initial loading path; the descending (post-peak) branch to the ultimate point, which represents the softening behaviour; and optionally, a residual strength plateau at large deformations. Each of these regions provides important information about the structural behaviour.
+
+\subsection{Monotonic Envelope Extraction}
+
+The monotonic envelope extraction is a critical step in the backbone curve generation process. This procedure involves sorting the data points by absolute displacement and applying a sophisticated clustering algorithm to identify the outermost points of the response envelope. The clustering tolerance, defined in Equation~\ref{eq:tolerance}, is set to 2\% of the maximum absolute displacement, which has been found to provide optimal results in practice.
+
+\begin{equation}
+\tau = 0.02 \times \max(|D|)
+\label{eq:tolerance}
+\end{equation}
+
+For each cluster of points identified by the algorithm, the point with the maximum absolute force is retained, as shown in Equation~\ref{eq:cluster_max}. This approach ensures that the extracted envelope truly represents the maximum forces achieved at each displacement level.
+
+\begin{equation}
+(\bar{D}_j, \bar{F}_j) = \arg\max_{i \in \text{cluster}_j} |F_i|
+\label{eq:cluster_max}
+\end{equation}
+
+The monotonic envelope is then constructed by retaining only those points where the absolute displacement strictly increases, as expressed in Equation~\ref{eq:envelope}. This monotonicity requirement is essential to ensure that the envelope represents a well-defined function, which is necessary for subsequent analysis steps.
+
+\begin{equation}
+\text{Envelope} = \{ (\bar{D}_j, \bar{F}_j) \mid \bar{D}_j > \bar{D}_{j-1} \}
+\label{eq:envelope}
+\end{equation}
+
+\subsection{EEEP Method Formulation}
+
+The EEEP method is based on several key parameters that together characterize the cyclic behaviour of the structure. These parameters, which are defined in Table~\ref{tab:eeep_params}, form the basis for the bilinear idealization and provide a comprehensive description of the structural response.
+
+\begin{table}[h]
+\centering
+\caption{EEEP Method Parameters}\label{tab:eeep_params}
+\begin{tabular}{p{3cm}p{3cm}p{8cm}}
+\toprule
+\textbf{Parameter} & \textbf{Symbol} & \textbf{Description} \\
+\midrule
+Peak Force & \(F_{\max}\) & Maximum force attained during the entire loading history \\
+Peak Displacement & \(D_{\max}\) & Displacement at which the peak force is attained \\
+Ultimate Force & \(F_u\) & Force at the ultimate point, defined as 80\% of the peak force \\
+Ultimate Displacement & \(D_u\) & Displacement at which the ultimate force is attained \\
+Initial Stiffness & \(K_e\) & Secant stiffness through 40\% of the peak force on the ascending branch \\
+Yield Force & \(F_y\) & Force at the idealized yield point determined by the equal energy principle \\
+Yield Displacement & \(D_y\) & Displacement at the idealized yield point \\
+Ductility & \(\mu\) & Ratio of ultimate displacement to yield displacement \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Initial Stiffness}
+
+The initial stiffness \(K_e\) is a fundamental parameter that characterizes the elastic behaviour of the structure. It is defined as the secant stiffness through 40\% of the peak force on the ascending branch of the backbone curve, as expressed in Equation~\ref{eq:ke}. This definition is based on the observation that the initial stiffness is best represented by the secant modulus at a low fraction of the peak load, which avoids the nonlinear effects that occur near the peak.
+
+\begin{equation}
+K_e = \frac{0.4 F_{\max}}{D_{0.4}}
+\label{eq:ke}
+\end{equation}
+
+In this equation, \(D_{0.4}\) represents the displacement at which the force reaches 40\% of the peak force on the ascending branch. This point is carefully selected because it lies in the approximately linear region of the response, ensuring that the computed stiffness is representative of the undamaged behaviour.
+
+\subsubsection{Ultimate Point}
+
+The ultimate point \((D_u, F_u)\) is a critical parameter that defines the deformation capacity of the structure. According to the ASTM E2126 standard, the ultimate point is defined as the first point after the peak where the force drops below 80\% of the peak force, as shown in Equation~\ref{eq:fu}. This 80\% criterion is based on the concept that the structure has lost 20\% of its peak strength, which is considered the practical limit of its load-carrying capacity.
+
+\begin{equation}
+F_u = 0.8 F_{\max}
+\label{eq:fu}
+\end{equation}
+
+The corresponding displacement \(D_u\) is obtained by linear interpolation between the two points bracketing the 80\% force level, as expressed in Equation~\ref{eq:du_interp}. This interpolation procedure ensures accurate determination of the ultimate displacement even when the data points do not exactly coincide with the 80\% force level.
+
+\begin{equation}
+D_u = D_i + \frac{F_u - F_i}{F_{i+1} - F_i} (D_{i+1} - D_i)
+\label{eq:du_interp}
+\end{equation}
+
+In cases where the data does not exhibit a post-peak drop of 20\%, the ultimate point is conservatively taken as the last available data point. This fallback assumption, expressed in Equation~\ref{eq:ultimate_fallback}, ensures that the analysis can proceed even when the data is incomplete.
+
+\begin{equation}
+(D_u, F_u) = (x_{\text{last}}, y_{\text{last}})
+\label{eq:ultimate_fallback}
+\end{equation}
+
+\subsubsection{Yield Point}
+
+The yield point \((D_y, F_y)\) is determined by solving the equal energy equation, which is the cornerstone of the EEEP method. This equation, presented in Equation~\ref{eq:equal_energy}, expresses the fundamental principle that the area under the idealized bilinear curve must equal the area under the actual curve up to the ultimate point.
+
+\begin{equation}
+\frac{1}{2} K_e D_y^2 + F_y (D_u - D_y) = \int_0^{D_u} F_{\text{actual}}(D) \, dD
+\label{eq:equal_energy}
+\end{equation}
+
+The left-hand side of this equation represents the area under the idealized elastic-perfectly-plastic curve, which consists of a linear elastic portion up to yielding followed by a perfectly plastic plateau. The right-hand side represents the area under the actual backbone curve, which is computed numerically using the trapezoidal rule.
+
+Solving this equation for the yield force yields Equation~\ref{eq:fy}, which provides a closed-form solution for the yield force in terms of the initial stiffness, ultimate displacement, and total energy.
+
+\begin{equation}
+F_y = K_e D_u - \sqrt{(K_e D_u)^2 - 2 K_e E}
+\label{eq:fy}
+\end{equation}
+
+In this equation, \(E\) represents the total area under the actual curve up to the ultimate displacement, as defined in Equation~\ref{eq:energy_area}. This area is computed by numerical integration of the backbone curve.
+
+\begin{equation}
+E = \int_0^{D_u} F_{\text{actual}}(D) \, dD
+\label{eq:energy_area}
+\end{equation}
+
+The yield displacement is then obtained from the yield force using the initial stiffness, as shown in Equation~\ref{eq:dy}. This relationship follows directly from the definition of the initial stiffness as the slope of the elastic portion of the idealized curve.
+
+\begin{equation}
+D_y = \frac{F_y}{K_e}
+\label{eq:dy}
+\end{equation}
+
+\subsubsection{Ductility}
+
+The displacement ductility, defined in Equation~\ref{eq:ductility}, is a fundamental measure of the deformation capacity of the structure. It represents the ratio of the ultimate displacement to the yield displacement and provides a quantitative measure of the structure's ability to deform beyond yielding without collapse.
+
+\begin{equation}
+\mu = \frac{D_u}{D_y}
+\label{eq:ductility}
+\end{equation}
+
+This parameter is of paramount importance in seismic design because it indicates how much the structure can deform inelastically while still maintaining its load-carrying capacity. Higher ductility values generally indicate better seismic performance.
+
+\subsection{Energy Dissipation}
+
+The energy dissipated in a single hysteresis loop is a critical measure of the structure's energy absorption capacity. This energy is computed using the shoelace formula, which gives the exact area enclosed by the loop when the data points are connected by straight lines. The formula is presented in Equation~\ref{eq:shoelace}.
+
+\begin{equation}
+E_j = \frac{1}{2} \left| \sum_{k=1}^{N_j} (D_k F_{k+1} - D_{k+1} F_k) \right|
+\label{eq:shoelace}
+\end{equation}
+
+In this equation, the summation is performed over all points in the cycle, with the loop being closed so that \(F_{N_j+1} = F_1\) and \(D_{N_j+1} = D_1\). This ensures that the path is closed and the area is properly computed. The absolute value is taken to ensure that the area is positive regardless of the direction of integration.
+
+The cumulative energy dissipation, defined in Equation~\ref{eq:cumulative_energy}, represents the total energy dissipated by the structure up to cycle \(j\). This cumulative measure provides insight into the total energy absorption capacity of the structure and is important for understanding the overall seismic performance.
+
+\begin{equation}
+E_{\text{cum},j} = \sum_{k=1}^{j} E_k
+\label{eq:cumulative_energy}
+\end{equation}
+
+\subsection{Stiffness Degradation}
+
+The secant stiffness for cycle \(j\) is a measure of the effective stiffness of the structure during that cycle. It is defined as the slope of the line connecting the positive and negative peak points of the loop, as shown in Equation~\ref{eq:secant}. This definition provides a consistent measure of stiffness that can be compared across cycles.
+
+\begin{equation}
+K_j = \frac{F_j^{(+)} - F_j^{(-)}}{D_j^{(+)} - D_j^{(-)}}
+\label{eq:secant}
+\end{equation}
+
+The stiffness retention, defined in Equation~\ref{eq:retention}, expresses the current stiffness as a percentage of the initial stiffness. This parameter provides a clear indication of the degree of stiffness degradation that has occurred up to cycle \(j\).
+
+\begin{equation}
+K_{\text{ret},j} = \frac{K_j}{K_1} \times 100\%
+\label{eq:retention}
+\end{equation}
+
+The progressive reduction in stiffness with increasing cycles is a manifestation of cumulative damage in the structure. This degradation is typically more pronounced in the early cycles and tends to stabilize as the structure reaches a steady-state damage condition.
+
+% ====================================================================
+% CHAPTER 3: SOFTWARE ARCHITECTURE
+% ====================================================================
+\section{Software Architecture and Design}
+
+\subsection{System Architecture}
+
+The application follows a modular architecture with clear separation of concerns, which enhances maintainability, testability, and extensibility. The architecture consists of four distinct layers, each with specific responsibilities as described in Table~\ref{tab:architecture_layers}.
+
+\begin{table}[h]
+\centering
+\caption{System Architecture Layers}\label{tab:architecture_layers}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Layer} & \textbf{Responsibility} \\
+\midrule
+Data Layer & Handles all file I/O operations, data parsing from TXT files, and in-memory data storage \\
+Processing Layer & Implements all mathematical computations and algorithms, including backbone extraction and EEEP idealization \\
+Presentation Layer & Manages the GUI, interactive plotting, and all user interaction events \\
+Persistence Layer & Handles settings management, output generation, and CSV file writing \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This layered architecture ensures that each component has a well-defined purpose and can be developed, tested, and maintained independently. The separation of concerns also facilitates future enhancements and modifications to individual layers without affecting the others.
+
+\subsection{Class Structure}
+
+The main application class \texttt{BackboneGUI} is the central component that manages all GUI elements and coordinates the processing workflow. This class is designed with a clear structure that organizes the various components of the application.
+
+\subsubsection{Data Management}
+
+The data management attributes of the main class are responsible for storing and organizing all data processed by the application. The code snippet below shows the key data structures used in the application:
+
+\begin{lstlisting}
+class BackboneGUI:
+    def __init__(self):
+        self.results = {}          # stem -> plot_data dict
+        self.summary_rows = []     # list of dicts
+        self.summary_df = pd.DataFrame()
+        self.log_queue = queue.Queue()
+        self.worker_thread = None
+        self.cancel_event = threading.Event()
+\end{lstlisting}
+
+The \texttt{results} dictionary stores all plot data for each processed specimen, with the specimen name as the key and the plot data as the value. The \texttt{summary\_rows} list contains dictionaries representing each row of the summary table. The \texttt{summary\_df} is a Pandas DataFrame that provides convenient data manipulation capabilities. The \texttt{log\_queue} is a thread-safe queue used for communication between the worker thread and the main GUI thread.
+
+\subsubsection{Processing Pipeline}
+
+The processing pipeline consists of eight distinct stages that transform the raw input data into the final results. Each stage has a specific purpose and contributes to the overall analysis process. Table~\ref{tab:pipeline_stages} provides a detailed description of each stage.
+
+\begin{table}[h]
+\centering
+\caption{Processing Pipeline Stages}\label{tab:pipeline_stages}
+\begin{tabular}{p{3cm}p{11cm}}
+\toprule
+\textbf{Stage} & \textbf{Description} \\
+\midrule
+File Discovery & Scans the input folder for TXT files and validates their existence and readability \\
+Data Loading & Parses each TXT file, extracts displacement and force arrays, and performs data validation \\
+Backbone Extraction & Identifies reversal points, extracts the monotonic envelope, and constructs the backbone curve \\
+Branch Separation & Separates the backbone into positive and negative branches for independent analysis \\
+Branch Averaging & Mirrors the negative branch and computes the average branch for bilinear idealization \\
+Property Computation & Calculates all engineering properties including stiffness, yield point, and ductility \\
+Bilinear Idealization & Applies the EEEP method to determine the idealized elastic-perfectly-plastic curve \\
+Cycle Analysis & Identifies individual cycles and computes cycle-specific metrics \\
+Output Generation & Creates plots, CSV files, and updates the summary table \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Dependency Management}
+
+The application relies on several carefully selected Python packages that provide essential functionality. These dependencies are listed in Table~\ref{tab:dependencies}, along with their specific purposes in the application.
+
+\begin{longtable}{p{4cm}p{10cm}}
+\caption{Software Dependencies}\label{tab:dependencies}\\
+\toprule
+\textbf{Package} & \textbf{Purpose} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Package} & \textbf{Purpose} \\
+\midrule
+\endhead
+NumPy & Provides efficient numerical operations, array manipulation, and linear algebra capabilities \\
+Pandas & Offers advanced data management, CSV I/O operations, and sophisticated data structures \\
+Matplotlib & Enables high-quality plotting, visualization, and figure generation with publication-ready output \\
+Tkinter & Serves as the GUI framework, providing all windowing and widget functionality \\
+\bottomrule
+\end{longtable}
+
+\subsection{Data Flow Diagram}
+
+The data flow through the application follows a well-defined sequence that ensures proper handling of data at each stage. The process begins with the user selecting input and output folders. The application then scans the input folder for TXT files and processes each file through the complete pipeline. The key steps in this data flow are:
+
+\begin{enumerate}
+    \item The user selects input and output folders through the GUI
+    \item The application scans the input folder for all TXT files
+    \item For each file, the following processing steps are performed:
+    \begin{enumerate}
+        \item Load displacement and force data from the TXT file
+        \item Extract reversal points to identify turning points in the hysteresis curve
+        \item Build the monotonic envelope using the clustering algorithm
+        \item Extract the full backbone curve by combining positive and negative branches
+        \item Separate the backbone into positive and negative branches
+        \item Mirror the negative branch to the positive quadrant
+        \item Compute the average branch by interpolation and averaging
+        \item Calculate branch properties including peak, ultimate, and yield points
+        \item Generate the EEEP bilinear idealization
+        \item Identify individual cycles and compute cycle-specific metrics
+        \item Generate plots and CSV outputs for the specimen
+        \item Store results in memory for interactive visualization
+    \end{enumerate}
+    \item Update the summary table with all results
+    \item Enable interactive visualization of results
+\end{enumerate}
+
+\subsection{Threading Model}
+
+The application employs a sophisticated multi-threaded architecture that maintains GUI responsiveness during intensive computational operations. This threading model is essential for providing a smooth user experience, especially when processing large datasets. Table~\ref{tab:threading} describes the components of this threading model.
+
+\begin{table}[h]
+\centering
+\caption{Threading Model Components}\label{tab:threading}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Component} & \textbf{Description} \\
+\midrule
+Main Thread & Handles all GUI events, updates the interface, and maintains responsiveness \\
+Worker Thread & Performs the intensive processing operations in the background without blocking the GUI \\
+Log Queue & Provides thread-safe communication between the worker thread and the main thread for log messages \\
+Cancel Event & Allows the user to gracefully cancel processing operations at any time \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The threading model ensures that the GUI remains responsive and interactive even during long processing operations. The worker thread runs in the background, periodically updating the progress bar and log display through the thread-safe log queue. The cancel event mechanism provides a robust way for users to abort processing if needed.
+
+% ====================================================================
+% CHAPTER 4: MATHEMATICAL ALGORITHMS
+% ====================================================================
+\section{Mathematical Algorithms and Implementations}
+
+This chapter provides a comprehensive and detailed description of all mathematical algorithms implemented in the code, with complete explanations of the theoretical foundations and practical implementation details.
+
+\subsection{Data Loading and Validation}
+
+The data loading function \texttt{load\_hysteresis\_data(txt\_path)} implements a robust algorithm for reading and validating input data. This algorithm follows a well-defined sequence of steps to ensure data integrity before processing. Table~\ref{tab:data_loading} describes each step of this algorithm.
+
+\begin{table}[h]
+\centering
+\caption{Data Loading Algorithm Steps}\label{tab:data_loading}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Step} & \textbf{Description} \\
+\midrule
+File Reading & Opens the TXT file and reads all lines into memory \\
+Header Skipping & Skips the first row which contains column headers \\
+Column Splitting & Splits each line by tab or whitespace delimiter into displacement and force columns \\
+Data Conversion & Converts string values to floating-point numbers \\
+Validation & Checks for NaN values and ensures at least 3 valid data points \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{File Parsing}
+
+The file parsing process involves reading the TXT file and converting its contents into numerical arrays. The parsing algorithm first attempts to read the file using tab as the delimiter, and if that fails, it falls back to using any whitespace as the delimiter. This flexibility ensures that the application can handle various file formats commonly encountered in experimental data. The parsing process is mathematically described in Equation~\ref{eq:parsing}, which shows the sequence of operations performed to convert the raw text file into numerical arrays.
+
+\begin{equation}
+\begin{aligned}
+\text{Read file} &\rightarrow \text{Skip header row} \\
+&\rightarrow \text{Split into columns} \\
+&\rightarrow \text{Convert to numeric arrays} \\
+&\rightarrow \text{Validate data integrity}
+\end{aligned}
+\label{eq:parsing}
+\end{equation}
+
+\subsubsection{Data Validation}
+
+The data validation step is critical for ensuring the quality and reliability of the analysis results. The validation criteria, expressed in Equation~\ref{eq:validation}, require that the data contain at least three valid points with no missing or infinite values.
+
+\begin{equation}
+\text{Valid if } N \ge 3 \text{ and } \text{no NaN values} \text{ and } \text{finite values}
+\label{eq:validation}
+\end{equation}
+
+\subsection{Reversal Point Detection}
+
+The function \texttt{find\_reversal\_points(disp, force)} implements a sophisticated algorithm for identifying turning points in the hysteresis curve. These turning points, also known as reversal points, are essential for extracting the backbone curve and identifying individual cycles. The algorithm follows a systematic process that is described in Table~\ref{tab:reversal_algorithm}.
+
+\begin{table}[h]
+\centering
+\caption{Reversal Point Detection Algorithm}\label{tab:reversal_algorithm}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Step} & \textbf{Description} \\
+\midrule
+Gradient Calculation & Computes the difference between consecutive displacement values to determine the direction of motion \\
+Sign Determination & Determines the sign of each gradient to identify the direction of movement (positive or negative) \\
+Zero Handling & Handles zero gradients by forward filling from the nearest non-zero gradient \\
+Turning Point Detection & Identifies turning points where the sign of the gradient changes \\
+Endpoint Handling & Marks the first and last points as turning points to ensure complete cycle identification \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Gradient Calculation}
+
+The first step in reversal point detection is the computation of the displacement gradient. This gradient represents the change in displacement between consecutive data points and is fundamental to identifying the direction of motion. The gradient is calculated using Equation~\ref{eq:gradient}, which computes the difference between each pair of consecutive displacements.
+
+\begin{equation}
+\Delta D_i = D_{i+1} - D_i, \quad i = 1, \ldots, N-1
+\label{eq:gradient}
+\end{equation}
+
+\subsubsection{Sign Determination}
+
+Once the gradients have been computed, the next step is to determine the sign of each gradient. The sign function, defined in Equation~\ref{eq:sign}, returns \(1\) for positive gradients (increasing displacement), \(-1\) for negative gradients (decreasing displacement), and \(0\) for zero gradients (no change in displacement).
+
+\begin{equation}
+S_i = \text{sign}(\Delta D_i) = 
+\begin{cases}
+1, & \Delta D_i > 0 \\
+0, & \Delta D_i = 0 \\
+-1, & \Delta D_i < 0
+\end{cases}
+\label{eq:sign}
+\end{equation}
+
+Zero gradients, which can occur due to data acquisition issues or numerical rounding, are handled by forward filling from the nearest non-zero gradient, as shown in Equation~\ref{eq:ffill}. This ensures that the direction of motion is consistently defined even in the presence of zero-gradient points.
+
+\begin{equation}
+S_i^{\text{filled}} = \text{ffill}(S_i)
+\label{eq:ffill}
+\end{equation}
+
+\subsubsection{Turning Point Detection}
+
+A turning point is identified when the sign of the gradient changes, indicating that the direction of motion has reversed. This detection is expressed mathematically in Equation~\ref{eq:turning}, which assigns a value of \(1\) to points where the sign changes and \(0\) otherwise.
+
+\begin{equation}
+T_i = 
+\begin{cases}
+1, & S_i \neq S_{i-1} \\
+0, & \text{otherwise}
+\end{cases}
+\label{eq:turning}
+\end{equation}
+
+The first and last points of the dataset are always considered turning points, as expressed in Equation~\ref{eq:endpoints}. This ensures that the algorithm identifies complete cycles, even when the data does not start and end at the same displacement level.
+
+\begin{equation}
+T_0 = 1, \quad T_{N-1} = 1
+\label{eq:endpoints}
+\end{equation}
+
+\subsection{Monotonic Envelope Extraction}
+
+The function \texttt{monotonic\_envelope(x, y, cluster\_tol=0.02)} implements a robust algorithm for extracting the monotonic envelope from the data. This algorithm is designed to identify the outermost points of the response envelope while ensuring monotonicity. Table~\ref{tab:envelope_algorithm} describes the steps of this algorithm.
+
+\begin{table}[h]
+\centering
+\caption{Monotonic Envelope Extraction Algorithm}\label{tab:envelope_algorithm}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Step} & \textbf{Description} \\
+\midrule
+Sorting & Sorts all data points by absolute displacement, ensuring the envelope is built from the smallest to the largest displacement \\
+Clustering & Groups points that are within the specified tolerance, preventing noise from affecting the envelope \\
+Reduction & For each cluster, retains only the point with the maximum absolute force, representing the true envelope \\
+Monotonicity & Retains only those points where the absolute displacement strictly increases, ensuring a well-defined function \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Sorting by Absolute Displacement}
+
+The first step in the monotonic envelope extraction is sorting the data by absolute displacement. This sorting operation, expressed in Equation~\ref{eq:argsort}, ensures that the envelope is built from the smallest to the largest displacements, which is essential for monotonicity.
+
+\begin{equation}
+\text{idx} = \text{argsort}(|x|)
+\label{eq:argsort}
+\end{equation}
+
+\subsubsection{Clustering}
+
+The clustering operation groups data points that are within a specified tolerance of each other. This tolerance, defined in Equation~\ref{eq:cluster_tol}, is set to 2\% of the maximum absolute displacement. This approach prevents noise and minor variations in the data from causing multiple closely spaced points to appear in the envelope.
+
+\begin{equation}
+\tau = \text{cluster\_tol} \times \max(|x|)
+\label{eq:cluster_tol}
+\end{equation}
+
+The clustering algorithm itself is described in Equation~\ref{eq:clustering}, which shows how points are progressively added to clusters until the tolerance is exceeded, at which point a new cluster is started.
+
+\begin{equation}
+\begin{aligned}
+\text{Initialize cluster } &C_1 = \{(x_1, |y_1|)\} \\
+\text{For } i &= 2, \ldots, N: \\
+& \text{If } x_i - x_{\text{last}} \le \tau: \text{ Add to current cluster} \\
+& \text{Else: Start new cluster}
+\end{aligned}
+\label{eq:clustering}
+\end{equation}
+
+\subsubsection{Cluster Reduction}
+
+For each cluster of points, the reduction step retains only the point with the maximum absolute force, as shown in Equation~\ref{eq:cluster_reduce}. This ensures that the envelope represents the true maximum forces achieved in each displacement region.
+
+\begin{equation}
+(\bar{x}_j, \bar{y}_j) = \arg\max_{i \in C_j} |y_i|
+\label{eq:cluster_reduce}
+\end{equation}
+
+\subsubsection{Monotonicity Enforcement}
+
+The final step in the envelope extraction is the enforcement of monotonicity. Only those points where the absolute displacement strictly increases are retained, as shown in Equation~\ref{eq:monotonic}. This ensures that the envelope is a well-defined function, which is necessary for subsequent analysis.
+
+\begin{equation}
+\text{Keep } (\bar{x}_j, \bar{y}_j) \text{ if } \bar{x}_j > \max_{k < j} \bar{x}_k
+\label{eq:monotonic}
+\end{equation}
+
+\subsection{Backbone Curve Construction}
+
+The function \texttt{build\_backbone(disp, force)} constructs the complete backbone curve by combining the positive and negative branches of the response. This construction follows a systematic process that is described in Table~\ref{tab:backbone_algorithm}.
+
+\begin{table}[h]
+\centering
+\caption{Backbone Curve Construction Algorithm}\label{tab:backbone_algorithm}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Step} & \textbf{Description} \\
+\midrule
+Branch Separation & Separates the data points into positive and negative branches based on the sign of the displacement \\
+Envelope Extraction & Extracts the monotonic envelope for each branch independently \\
+Combination & Combines the two branches with the origin point to form the complete backbone curve \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Branch Separation}
+
+The branch separation process divides the data into positive and negative branches based on the sign of the displacement. This separation, expressed in Equation~\ref{eq:branch_separation}, creates two independent datasets that can be analyzed separately.
+
+\begin{align}
+P &= \{(x_i, y_i) \mid x_i > 0\} \\
+N &= \{(x_i, y_i) \mid x_i < 0\}
+\label{eq:branch_separation}
+\end{align}
+
+\subsubsection{Monotonic Envelope Extraction}
+
+The monotonic envelope is extracted independently for each branch using the algorithm described in the previous section. For the negative branch, the absolute displacement is used to ensure consistent processing, as shown in Equation~\ref{eq:branch_envelope}.
+
+\begin{align}
+(P_x, P_y) &= \text{monotonic\_envelope}(P_x, P_y) \\
+(N_x, N_y) &= \text{monotonic\_envelope}(-N_x, -N_y)
+\label{eq:branch_envelope}
+\end{align}
+
+\subsubsection{Combined Backbone}
+
+The complete backbone curve is constructed by combining the negative branch, the origin point, and the positive branch, as shown in Equation~\ref{eq:combined_backbone}. This combination creates a continuous curve that represents the full response envelope.
+
+\begin{equation}
+B = (N_x, N_y) \cup (0, 0) \cup (P_x, P_y)
+\label{eq:combined_backbone}
+\end{equation}
+
+\subsection{Mirroring Negative Branch}
+
+The function \texttt{mirror\_negative\_branch(neg\_x, neg\_y)} implements the mirroring operation that reflects the negative branch onto the positive quadrant. This mirroring is essential for computing the average branch and for comparing the positive and negative responses.
+
+\subsubsection{Reversal and Sign Change}
+
+The mirroring operation involves reversing the order of the negative branch and negating both the displacement and force values, as shown in Equation~\ref{eq:mirror_math}. This transformation results in a curve in the positive quadrant that represents the mirrored negative branch.
+
+\begin{align}
+M_x &= -\text{reverse}(N_x) \\
+M_y &= -\text{reverse}(N_y)
+\label{eq:mirror_math}
+\end{align}
+
+The resulting curve \(M = (M_x, M_y)\) lies entirely in the positive quadrant, with displacement and force values that are the absolute values of the corresponding negative branch points. This mirroring allows for direct comparison with the positive branch.
+
+\subsection{Average Branch Calculation}
+
+The function \texttt{average\_branch(pos\_x, pos\_y, mirror\_x, mirror\_y)} computes the average branch by interpolating both the positive and mirrored negative branches onto a common grid and averaging the results. Table~\ref{tab:avg_algorithm} describes the steps of this algorithm.
+
+\begin{table}[h]
+\centering
+\caption{Average Branch Calculation Algorithm}\label{tab:avg_algorithm}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Step} & \textbf{Description} \\
+\midrule
+Grid Creation & Creates a common grid from the union of both branch displacement values \\
+Interpolation & Interpolates both branches onto the common grid using linear interpolation \\
+Averaging & Computes the average of the two interpolated curves at each grid point \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Common Grid}
+
+The common grid is created by taking the union of the displacement values from both branches, as shown in Equation~\ref{eq:common_grid}. This ensures that the average branch is computed at all points where either branch has data.
+
+\begin{equation}
+G = \text{unique}(P_x \cup M_x)
+\label{eq:common_grid}
+\end{equation}
+
+\subsubsection{Interpolation}
+
+Both branches are interpolated onto the common grid using linear interpolation, as shown in Equation~\ref{eq:interpolation}. This interpolation provides values at all grid points, even where a branch does not originally have data.
+
+\begin{align}
+P_y^{(G)} &= \text{interp}(G, P_x, P_y) \\
+M_y^{(G)} &= \text{interp}(G, M_x, M_y)
+\label{eq:interpolation}
+\end{align}
+
+\subsubsection{Averaging}
+
+The average branch is computed by taking the arithmetic mean of the two interpolated curves, as shown in Equation~\ref{eq:averaging}. This average represents the typical behaviour of the structure in both loading directions.
+
+\begin{equation}
+A_y^{(G)} = \frac{P_y^{(G)} + M_y^{(G)}}{2}
+\label{eq:averaging}
+\end{equation}
+
+\subsection{Branch Property Computation}
+
+The function \texttt{compute\_branch\_properties(x, y)} computes all engineering properties for a given branch. This comprehensive computation follows the ASTM E2126 EEEP method and provides all parameters necessary for characterizing the cyclic behaviour. Table~\ref{tab:properties_algorithm} summarizes the computed properties.
+
+\begin{table}[h]
+\centering
+\caption{Branch Property Computation}\label{tab:properties_algorithm}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Property} & \textbf{Description} \\
+\midrule
+Peak Point & Maximum force and corresponding displacement, representing the peak strength \\
+Ultimate Point & Point at 80\% of peak force after the peak, representing the deformation capacity \\
+Initial Stiffness & Secant stiffness through 40\% of peak force, representing the elastic behaviour \\
+Energy & Area under the curve up to the ultimate point, representing the energy absorption \\
+Bilinear Idealization & EEEP yield point and ductility, providing the idealized response \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Peak Point}
+
+The peak point is found by identifying the maximum force and its corresponding displacement, as shown in Equation~\ref{eq:peak_computation}. This point represents the peak strength of the structure.
+
+\begin{equation}
+i_{\max} = \arg\max y, \quad F_{\max} = y_{i_{\max}}, \quad D_{\max} = x_{i_{\max}}
+\label{eq:peak_computation}
+\end{equation}
+
+\subsubsection{Ultimate Point}
+
+The ultimate point is found by searching for the first post-peak point where the force drops below a specified fraction of the peak force. The default fraction is 80\%, which is consistent with the ASTM E2126 standard, as shown in Equation~\ref{eq:ultimate_search}.
+
+\begin{equation}
+F_u = \text{degrade\_frac} \times F_{\max}
+\label{eq:ultimate_search}
+\end{equation}
+
+The displacement at the ultimate point is obtained by linear interpolation, as shown in Equation~\ref{eq:ultimate_interp}. This interpolation ensures accurate determination of the ultimate displacement even when the data points do not exactly coincide with the 80\% force level.
+
+\begin{equation}
+D_u = x_i + \frac{F_u - y_i}{y_{i+1} - y_i} (x_{i+1} - x_i)
+\label{eq:ultimate_interp}
+\end{equation}
+
+\subsubsection{Initial Stiffness}
+
+The initial stiffness is found by locating the point on the ascending branch where the force reaches 40\% of the peak force, as shown in Equation~\ref{eq:stiffness_target}. This point lies in the approximately linear region of the response.
+
+\begin{equation}
+F_{0.4} = 0.4 F_{\max}
+\label{eq:stiffness_target}
+\end{equation}
+
+The displacement at this force is obtained by linear interpolation, as shown in Equation~\ref{eq:stiffness_interp}. The initial stiffness is then computed as the ratio of the force to the displacement, as shown in Equation~\ref{eq:stiffness_computation}.
+
+\begin{equation}
+D_{0.4} = x_i + \frac{F_{0.4} - y_i}{y_{i+1} - y_i} (x_{i+1} - x_i)
+\label{eq:stiffness_interp}
+\end{equation}
+
+\begin{equation}
+K_e = \frac{F_{0.4}}{D_{0.4}}
+\label{eq:stiffness_computation}
+\end{equation}
+
+\subsubsection{Energy Dissipation}
+
+The energy dissipated up to the ultimate point is computed using the trapezoidal rule, as shown in Equation~\ref{eq:energy_trap}. This numerical integration provides an accurate estimate of the area under the curve.
+
+\begin{equation}
+E = \int_0^{D_u} y(x) \, dx \approx \sum_{i=1}^{n-1} \frac{y_i + y_{i+1}}{2} \Delta x_i
+\label{eq:energy_trap}
+\end{equation}
+
+\subsubsection{EEEP Bilinear Idealization}
+
+The EEEP bilinear idealization is computed using the equal energy principle. The yield force is given by Equation~\ref{eq:fy_computation}, which provides a closed-form solution in terms of the initial stiffness, ultimate displacement, and total energy.
+
+\begin{equation}
+F_y = K_e D_u - \sqrt{(K_e D_u)^2 - 2 K_e E}
+\label{eq:fy_computation}
+\end{equation}
+
+The yield displacement is then obtained from the yield force using the initial stiffness, as shown in Equation~\ref{eq:dy_computation}. This relationship follows directly from the definition of the initial stiffness.
+
+\begin{equation}
+D_y = \frac{F_y}{K_e}
+\label{eq:dy_computation}
+\end{equation}
+
+The displacement ductility is computed as the ratio of the ultimate displacement to the yield displacement, as shown in Equation~\ref{eq:ductility_computation}. This ductility is a key measure of the deformation capacity of the structure.
+
+\begin{equation}
+\mu = \frac{D_u}{D_y}
+\label{eq:ductility_computation}
+\end{equation}
+
+\subsection{Cycle Identification}
+
+The function \texttt{identify\_cycles(disp, force)} implements a robust algorithm for identifying individual loading cycles in the time-ordered data. This algorithm follows a systematic process that is described in Table~\ref{tab:cycle_algorithm}.
+
+\begin{table}[h]
+\centering
+\caption{Cycle Identification Algorithm}\label{tab:cycle_algorithm}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Step} & \textbf{Description} \\
+\midrule
+Peak Detection & Identifies positive displacement peaks from the turning points \\
+Segmentation & Segments the data between consecutive positive peaks to form individual cycles \\
+Peak Extraction & Extracts the positive and negative force peaks within each cycle \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Positive Peak Detection}
+
+Positive displacement peaks are identified from the turning points, as shown in Equation~\ref{eq:pos_peaks}. Only those turning points with positive displacement are considered, ensuring that cycles are properly defined.
+
+\begin{equation}
+P_{\text{peak}} = \{ i \mid T_i = 1 \text{ and } D_i > 0 \}
+\label{eq:pos_peaks}
+\end{equation}
+
+\subsubsection{Cycle Segmentation}
+
+Each cycle is defined as the segment of data between consecutive positive displacement peaks, as shown in Equation~\ref{eq:cycle_segmentation}. This definition ensures that each cycle contains exactly one positive and one negative excursion.
+
+\begin{equation}
+\text{Cycle}_j = \{ (D_i, F_i) \mid i_{\text{peak},j} \le i \le i_{\text{peak},j+1} \}
+\label{eq:cycle_segmentation}
+\end{equation}
+
+\subsubsection{Peak Extraction}
+
+Within each cycle, the positive and negative force peaks are identified, as shown in Equation~\ref{eq:cycle_peaks}. These peaks are used for computing the secant stiffness and other cycle-specific metrics.
+
+\begin{align}
+i_{\text{pos}} &= \arg\max F_i \\
+i_{\text{neg}} &= \arg\min F_i
+\label{eq:cycle_peaks}
+\end{align}
+
+\subsection{Cycle Metrics Computation}
+
+The function \texttt{compute\_cycle\_metrics(cycles)} computes a comprehensive set of metrics for each identified cycle. These metrics provide detailed insight into the cyclic behaviour and degradation. Table~\ref{tab:metrics_formulas} summarizes the computed metrics.
+
+\begin{table}[h]
+\centering
+\caption{Cycle Metrics Formulas}\label{tab:metrics_formulas}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Metric} & \textbf{Formula} \\
+\midrule
+Secant Stiffness & \(K_j = \frac{F_j^{(+)} - F_j^{(-)}}{D_j^{(+)} - D_j^{(-)}}\) \\
+Stiffness Retention & \(K_{\text{ret},j} = \frac{K_j}{K_1} \times 100\%\) \\
+Dissipated Energy & \(E_j = \frac{1}{2} \left| \sum_{k=1}^{N_j} (D_k F_{k+1} - D_{k+1} F_k) \right|\) \\
+Cumulative Energy & \(E_{\text{cum},j} = \sum_{k=1}^{j} E_k\) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Secant Stiffness}
+
+The secant stiffness for cycle \(j\) is computed as the slope of the line connecting the positive and negative peak points, as shown in Equation~\ref{eq:secant_formula}. This stiffness represents the effective stiffness of the structure during that cycle.
+
+\begin{equation}
+K_j = \frac{F_j^{(+)} - F_j^{(-)}}{D_j^{(+)} - D_j^{(-)}}
+\label{eq:secant_formula}
+\end{equation}
+
+\subsubsection{Stiffness Retention}
+
+The stiffness retention, expressed as a percentage of the initial stiffness, is computed as shown in Equation~\ref{eq:retention_formula}. This metric provides a clear indication of the stiffness degradation that has occurred.
+
+\begin{equation}
+K_{\text{ret},j} = \frac{K_j}{K_1} \times 100\%
+\label{eq:retention_formula}
+\end{equation}
+
+\subsubsection{Dissipated Energy}
+
+The energy dissipated in each cycle is computed using the shoelace formula, as shown in Equation~\ref{eq:shoelace_formula}. This formula gives the exact area enclosed by the cycle when the data points are connected by straight lines.
+
+\begin{equation}
+E_j = \frac{1}{2} \left| \sum_{k=1}^{N_j} (D_k F_{k+1} - D_{k+1} F_k) \right|
+\label{eq:shoelace_formula}
+\end{equation}
+
+\subsubsection{Cumulative Energy}
+
+The cumulative energy dissipation is computed by summing the energy dissipated in each cycle, as shown in Equation~\ref{eq:cumulative_formula}. This cumulative energy represents the total energy absorbed by the structure.
+
+\begin{equation}
+E_{\text{cum},j} = \sum_{k=1}^{j} E_k
+\label{eq:cumulative_formula}
+\end{equation}
+
+% ====================================================================
+% CHAPTER 5: GUI IMPLEMENTATION
+% ====================================================================
+\section{GUI Implementation and Features}
+
+\subsection{Layout Structure}
+
+The GUI is organized into a hierarchical layout structure that provides a clear and intuitive user experience. The top-level structure is shown in the code listing below:
+
+\begin{lstlisting}
+BackboneGUI (Tk)
++-- Header Frame (branding)
++-- Folder Selection Panel
++-- Notebook (Tabs)
+    +-- Plot Viewer Tab
+        +-- Navigation Bar
+        +-- View Controls
+        +-- Export Controls
+        +-- Canvas Frame (plot)
+        +-- Engineering Information Panel
+    +-- Processing Log Tab
+        +-- Log Controls
+        +-- Log Text Area
+    +-- Summary Table Tab
+        +-- Search and Filter Controls
+        +-- Treeview Table
++-- Status Bar
++-- Footer
+\end{lstlisting}
+
+This hierarchical organization ensures that related controls are grouped together, making the interface easy to navigate and use.
+
+\subsection{Interactive Plot Features}
+
+The plot viewer provides a rich set of interactive features that facilitate detailed data exploration and analysis. These features are summarized in Table~\ref{tab:interactive_features}.
+
+\begin{table}[h]
+\centering
+\caption{Interactive Plot Features}\label{tab:interactive_features}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Feature} & \textbf{Description} \\
+\midrule
+Hover & Displays the current cursor coordinates in the status bar for precise data reading \\
+Click & Highlights the nearest data point and displays its coordinates in the information panel \\
+Pan & Allows click-and-drag translation of the plot view for exploring different regions \\
+Zoom & Enables scroll wheel zoom for detailed examination of specific regions \\
+Crosshair & Provides dynamic horizontal and vertical guide lines that follow the mouse cursor \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Mouse Interaction}
+
+The mouse interaction is implemented through event handlers that respond to different mouse actions. Table~\ref{tab:mouse_interaction} describes the response to each type of mouse event.
+
+\begin{table}[h]
+\centering
+\caption{Mouse Interaction Response}\label{tab:mouse_interaction}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Event} & \textbf{Action} \\
+\midrule
+Motion & Updates the status bar with the current cursor coordinates \\
+Button Press & Finds and highlights the nearest data point to the click location \\
+Button Drag & Pans the plot view in the direction of the drag \\
+Scroll & Zooms in or out around the cursor position \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Crosshair Cursor}
+
+The crosshair cursor consists of two perpendicular lines that intersect at the mouse position, as shown in Equation~\ref{eq:crosshair}. This feature aids in precise data reading and alignment.
+
+\begin{equation}
+\begin{aligned}
+L_{\text{horizontal}} &: y = y_{\text{mouse}} \\
+L_{\text{vertical}} &: x = x_{\text{mouse}}
+\end{aligned}
+\label{eq:crosshair}
+\end{equation}
+
+\subsubsection{Data Inspection}
+
+Clicking on the plot triggers a nearest-point search algorithm, as shown in Equation~\ref{eq:nearest}. This algorithm finds the data point with the minimum Euclidean distance to the click location.
+
+\begin{equation}
+\text{idx} = \arg\min_i \| (x_i, y_i) - (x_{\text{mouse}}, y_{\text{mouse}}) \|_2
+\label{eq:nearest}
+\end{equation}
+
+\subsection{Engineering Information Panel}
+
+The engineering information panel displays a comprehensive set of parameters for the selected specimen. These parameters are listed in Table~\ref{tab:info_panel}, along with their descriptions.
+
+\begin{longtable}{p{5cm}p{9cm}}
+\caption{Information Panel Fields}\label{tab:info_panel}\\
+\toprule
+\textbf{Field} & \textbf{Description} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Field} & \textbf{Description} \\
+\midrule
+\endhead
+Specimen & The name of the specimen being displayed \\
+Peak Force & Maximum force \(F_{\max}\) attained during the test, in kilonewtons (kN) \\
+Peak Displacement & Displacement at which the peak force was attained, in millimetres (mm) \\
+Yield Force & Yield force \(F_y\) determined by the EEEP method, in kilonewtons (kN) \\
+Yield Displacement & Yield displacement \(D_y\) determined by the EEEP method, in millimetres (mm) \\
+Ultimate Force & Ultimate force \(F_u\) at 80\% of peak force, in kilonewtons (kN) \\
+Ultimate Displacement & Ultimate displacement \(D_u\) at 80\% of peak force, in millimetres (mm) \\
+Initial Stiffness & Initial stiffness \(K_e\) through 40\% of peak force, in kilonewtons per millimetre (kN/mm) \\
+Energy Dissipation & Total energy \(E\) dissipated up to the ultimate point, in kilonewton-millimetres (kNmm) \\
+Ductility & Ductility ratio \(\mu = D_u/D_y\) \\
+Number of Cycles & Total number of identified cycles \\
+Processing Status & Indicates whether processing succeeded (OK) or failed (FAIL), with notes \\
+\bottomrule
+\end{longtable}
+
+\subsection{Processing Log Implementation}
+
+The processing log provides real-time feedback during batch processing using a color-coding system that makes it easy to identify the status of each operation. The color coding is described in Table~\ref{tab:log_colors}.
+
+\begin{longtable}{p{3cm}p{11cm}}
+\caption{Processing Log Color Coding}\label{tab:log_colors}\\
+\toprule
+\textbf{Color} & \textbf{Meaning} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Color} & \textbf{Meaning} \\
+\midrule
+\endhead
+Green (OK) & Indicates that a file was processed successfully without errors \\
+Red (FAIL) & Indicates that a file processing error occurred \\
+Blue (Header) & Indicates section headers and summary information \\
+Gray (Dim) & Indicates informational or verbose messages \\
+\bottomrule
+\end{longtable}
+
+\subsection{Summary Table Implementation}
+
+The summary table uses a Treeview widget that provides comprehensive data presentation and interaction capabilities. Table~\ref{tab:table_features} describes the main features of this table.
+
+\begin{table}[h]
+\centering
+\caption{Summary Table Features}\label{tab:table_features}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Feature} & \textbf{Description} \\
+\midrule
+Sorting & Click on column headers to sort the table in ascending or descending order \\
+Filtering & Use the search box to filter rows by any column content \\
+Highlighting & Automatic highlighting of maximum and minimum values for selected numeric columns \\
+Selection & Multiple row selection for bulk operations \\
+Export & Export selected rows to CSV format for further analysis \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Sorting}
+
+The sorting feature is implemented using Pandas, as shown in Equation~\ref{eq:sorting}. Clicking on a column header sorts the table by that column, with alternating ascending and descending order.
+
+\begin{equation}
+\text{df\_sorted} = \text{df.sort\_values}(by=\text{col}, \text{ascending}=\text{asc})
+\label{eq:sorting}
+\end{equation}
+
+\subsubsection{Filtering}
+
+The filtering feature uses string matching to show only rows that contain the search query, as shown in Equation~\ref{eq:filtering}. This allows users to quickly find specific specimens or data.
+
+\begin{equation}
+\text{mask} = \text{df.apply}( \text{row} \rightarrow \text{query} \in \text{row.astype(str)} )
+\label{eq:filtering}
+\end{equation}
+
+\subsubsection{Highlighting}
+
+The highlighting feature automatically identifies and highlights the maximum and minimum values in numeric columns, as shown in Equation~\ref{eq:highlighting}. This makes it easy to identify extreme values.
+
+\begin{equation}
+\begin{aligned}
+i_{\max} &= \arg\max \text{series} \\
+i_{\min} &= \arg\min \text{series}
+\end{aligned}
+\label{eq:highlighting}
+\end{equation}
+
+% ====================================================================
+% CHAPTER 6: OUTPUT GENERATION
+% ====================================================================
+\section{Output Generation and File Formats}
+
+\subsection{Directory Structure}
+
+The application automatically generates a comprehensive directory structure for organizing all output files. This structure, shown in the code listing below, ensures that different types of outputs are properly categorized and easy to locate.
+
+\begin{lstlisting}
+[Output Folder]/
++-- All Backbone Curves-Plots/        # Backbone curve plots in PNG format
++-- All Backbone Curves-CSVs/         # Backbone curve data in CSV format
++-- Positive-Negative-Average Plots/  # Branch comparison plots in PNG format
++-- Positive-Negative-Average CSVs/   # Branch data in CSV format
++-- Bilinear Idealization Plots/      # Bilinear idealization plots in PNG format
++-- Bilinear Idealization CSVs/       # Bilinear data in CSV format
++-- Stiffness Degradation Plots/      # Stiffness degradation plots in PNG format
++-- Stiffness Degradation CSVs/       # Cyclic properties data in CSV format
++-- Energy Dissipation Plots/         # Energy dissipation plots in PNG format
++-- Energy Dissipation CSVs/          # Energy dissipation data in CSV format
++-- Summary/                          # Master summary CSV file
+\end{lstlisting}
+
+\subsection{CSV File Formats}
+
+The application generates several CSV files with standardized formats. Table~\ref{tab:csv_formats} describes the columns in each CSV file type.
+
+\begin{table}[h]
+\centering
+\caption{CSV File Formats}\label{tab:csv_formats}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{File Type} & \textbf{Columns} \\
+\midrule
+Backbone Curve & displacement\_mm, force\_kN \\
+PNA & displacement\_mm, positive\_force\_kN, negative\_force\_mirrored\_kN, average\_force\_kN \\
+Bilinear Idealization & displacement\_mm, force\_kN \\
+Cyclic Properties & cycle\_number, stiffness\_kN\_per\_mm, stiffness\_pct\_of\_initial, energy\_dissipated\_kN\_mm, cumulative\_energy\_kN\_mm \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Backbone Curve CSV}
+
+The backbone curve CSV file contains the displacement-force coordinates of the extracted backbone curve, as shown in Equation~\ref{eq:backbone_csv}. This file provides the complete envelope data for further analysis.
+
+\begin{equation}
+\text{Columns} = [\text{displacement\_mm}, \text{force\_kN}]
+\label{eq:backbone_csv}
+\end{equation}
+
+\subsubsection{Positive/Negative/Average CSV}
+
+The PNA CSV file contains the positive, mirrored negative, and average branch data, as shown in Equation~\ref{eq:pna_csv}. This file provides detailed information about the symmetric and average behaviour.
+
+\begin{equation}
+\text{Columns} = [\text{displacement\_mm}, \text{positive\_force\_kN}, \text{negative\_force\_mirrored\_kN}, \text{average\_force\_kN}]
+\label{eq:pna_csv}
+\end{equation}
+
+\subsubsection{Bilinear Idealization CSV}
+
+The bilinear idealization CSV file contains the points defining the EEEP bilinear idealization, as shown in Equation~\ref{eq:bilinear_csv}. This file provides the idealized response curve.
+
+\begin{equation}
+\text{Columns} = [\text{displacement\_mm}, \text{force\_kN}]
+\label{eq:bilinear_csv}
+\end{equation}
+
+\subsubsection{Cyclic Properties CSV}
+
+The cyclic properties CSV file contains all cycle-specific metrics, as shown in Equation~\ref{eq:cyclic_csv}. This file provides detailed information about stiffness degradation and energy dissipation.
+
+\begin{equation}
+\text{Columns} = [\text{cycle\_number}, \text{stiffness\_kN\_per\_mm}, \text{stiffness\_pct\_of\_initial}, \text{energy\_dissipated\_kN\_mm}, \text{cumulative\_energy\_kN\_mm}]
+\label{eq:cyclic_csv}
+\end{equation}
+
+\subsection{Plot Generation}
+
+The application generates several types of plots with specific styling to ensure clarity and professionalism. Table~\ref{tab:plot_styles} describes the styling of each plot type.
+
+\begin{table}[h]
+\centering
+\caption{Plot Types and Styling}\label{tab:plot_styles}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Plot Type} & \textbf{Styling Description} \\
+\midrule
+Backbone Curve & Raw data in light gray with 0.8 linewidth; Backbone in crimson red with 2.2 linewidth and markers \\
+Bilinear Idealization & Average backbone in black with 2.0 linewidth; Bilinear in seagreen with dashed line and markers \\
+Stiffness Degradation & Bar chart in blue with black edges showing per-cycle stiffness \\
+Energy Dissipation & Bar chart in orange with black edges showing per-cycle energy \\
+Cumulative Energy & Bar chart in green with black edges showing cumulative energy \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Backbone Curve Plot}
+
+The backbone curve plot displays both the raw hysteresis data and the extracted backbone curve. The raw data is shown in light gray to provide context, while the backbone curve is highlighted in crimson red with markers. A grid with 30\% opacity is included for reference, and the origin is marked with a black dot for clarity.
+
+\subsubsection{Bilinear Idealization Plot}
+
+The bilinear idealization plot overlays the EEEP idealization on the average backbone curve. The average backbone is shown in black, while the bilinear idealization is shown in seagreen with a dashed line and markers. The peak and ultimate points are marked with red and purple dots, respectively, for easy identification.
+
+\subsubsection{Stiffness Degradation Plot}
+
+The stiffness degradation plot is a bar chart that shows the secant stiffness for each cycle. The bars are shown in blue with black edges for clarity. This plot provides a clear visual representation of stiffness degradation with increasing cycles.
+
+\begin{equation}
+\text{Bars: } (j, K_j) \text{ for } j = 1, \ldots, n
+\label{eq:stiffness_plot}
+\end{equation}
+
+\subsubsection{Energy Dissipation Plot}
+
+The energy dissipation plot is a bar chart that shows the energy dissipated in each cycle. The bars are shown in orange with black edges. This plot provides insight into the energy absorption capacity of the structure.
+
+\begin{equation}
+\text{Bars: } (j, E_j) \text{ for } j = 1, \ldots, n
+\label{eq:energy_plot}
+\end{equation}
+
+\subsection{Master Summary CSV}
+
+The master summary CSV file provides a comprehensive overview of all processed specimens. Table~\ref{tab:summary_csv} lists all columns in this file, organized by category.
+
+\begin{longtable}{p{4cm}p{10cm}}
+\caption{Summary CSV Columns}\label{tab:summary_csv}\\
+\toprule
+\textbf{Column} & \textbf{Description} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Column} & \textbf{Description} \\
+\midrule
+\endhead
+Specimen & Name of the specimen derived from the input filename \\
+Pos\_Fmax\_kN & Positive branch peak force in kilonewtons \\
+Pos\_Dmax\_mm & Positive branch peak displacement in millimetres \\
+Pos\_Dy\_mm & Positive branch yield displacement in millimetres \\
+Pos\_Fy\_kN & Positive branch yield force in kilonewtons \\
+Pos\_Du\_mm & Positive branch ultimate displacement in millimetres \\
+Pos\_Fu\_kN & Positive branch ultimate force in kilonewtons \\
+Pos\_Ke\_kN\_per\_mm & Positive branch initial stiffness in kilonewtons per millimetre \\
+Pos\_Energy\_kN\_mm & Positive branch energy dissipation in kilonewton-millimetres \\
+Pos\_Ductility & Positive branch ductility ratio \\
+Pos\_Notes & Positive branch notes and warnings \\
+Neg\_* & All negative branch (mirrored) properties with the same naming convention \\
+Avg\_* & All average branch properties with the same naming convention \\
+Num\_Cycles & Total number of identified cycles \\
+Total\_Energy\_Dissipated\_kN\_mm & Total cumulative energy dissipation in kilonewton-millimetres \\
+Final\_Stiffness\_Pct\_of\_Initial & Final stiffness retention as a percentage of initial stiffness \\
+\bottomrule
+\end{longtable}
+
+% ====================================================================
+% CHAPTER 7: USER PREFERENCES
+% ====================================================================
+\section{User Preferences and Persistence}
+
+\subsection{Preferences Storage}
+
+User preferences are stored in a JSON file located in the user's home directory, as shown in Equation~\ref{eq:settings_path}. This persistent storage ensures that user preferences are maintained between application sessions.
+
+\begin{equation}
+\text{Path} = \text{\textasciitilde/.bbcurve\_gui\_settings.json}
+\label{eq:settings_path}
+\end{equation}
+
+\subsection{Preference Categories}
+
+The preferences are organized into categories that correspond to different aspects of the application's behaviour. Table~\ref{tab:preferences} describes each category and its contents.
+
+\begin{longtable}{p{4cm}p{10cm}}
+\caption{Preference Categories}\label{tab:preferences}\\
+\toprule
+\textbf{Category} & \textbf{Description} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Category} & \textbf{Description} \\
+\midrule
+\endhead
+Folders & Stores the last input and output folders used by the application \\
+Recent & Maintains lists of recently used input and output folders for quick access \\
+Geometry & Saves the window size and position for consistent user experience \\
+Plot Style & Stores the default plot style preference (matplotlib style) \\
+Line Width & Saves the default line width for plots \\
+Marker Size & Stores the default marker size for plots \\
+Display & Saves the state of display toggles (grid, legend, markers) \\
+Export DPI & Stores the default export resolution for plots \\
+\bottomrule
+\end{longtable}
+
+\subsection{Preference JSON Schema}
+
+The complete JSON schema for the preferences file is shown below. This schema defines all available preferences and their data types.
+
+\begin{lstlisting}
+{
+    "last_input_dir": "string",
+    "last_output_dir": "string",
+    "recent_input_dirs": ["string"],
+    "recent_output_dirs": ["string"],
+    "window_geometry": "string",
+    "plot_style": "string",
+    "line_width": "number",
+    "marker_size": "number",
+    "show_grid": "boolean",
+    "show_legend": "boolean",
+    "show_markers": "boolean",
+    "crosshair_enabled": "boolean",
+    "export_dpi": "integer",
+    "max_recent": "integer"
+}
+\end{lstlisting}
+
+\subsection{Keyboard Shortcuts}
+
+The application supports a comprehensive set of keyboard shortcuts for efficient operation. Table~\ref{tab:shortcuts} lists all available shortcuts and their corresponding actions.
+
+\begin{longtable}{p{4cm}p{10cm}}
+\caption{Keyboard Shortcuts}\label{tab:shortcuts}\\
+\toprule
+\textbf{Shortcut} & \textbf{Action} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Shortcut} & \textbf{Action} \\
+\midrule
+\endhead
+Ctrl+O & Open the input folder selection dialog \\
+Ctrl+Shift+O & Open the output folder selection dialog \\
+Ctrl+R & Start processing all files in the input folder \\
+Ctrl+S & Save the current plot to a file \\
+Ctrl+E & Export the current plot with format and DPI options \\
+Ctrl+C & Copy the current plot image to the clipboard \\
+Ctrl+G & Toggle the plot grid on and off \\
+Ctrl+L & Toggle the plot legend on and off \\
+Ctrl+0 & Reset the plot view to the default zoom level \\
+Ctrl+F & Focus the specimen search box \\
+F5 & Refresh the current plot display \\
+Left & Navigate to the previous specimen \\
+Right & Navigate to the next specimen \\
+Ctrl+, & Open the preferences dialog \\
+Ctrl+Q & Exit the application \\
+\bottomrule
+\end{longtable}
+
+% ====================================================================
+% CHAPTER 8: COMPLETE EQUATIONS REFERENCE
+% ====================================================================
+\section{Complete Equations Reference}
+
+This chapter provides a comprehensive listing of all equations implemented in the application, organized by category with sequential numbering for easy reference.
+
+\subsection{Data Processing Equations}
+
+The following equations govern the initial data processing and validation stages of the analysis. Equation E1 defines the displacement and force arrays that form the fundamental data structure for all subsequent calculations.
+
+\begin{equation}
+D = \{d_i \in \mathbb{R} \mid i = 1, \ldots, N\}, \quad F = \{f_i \in \mathbb{R} \mid i = 1, \ldots, N\}
+\tag{E1}
+\label{eq:E1}
+\end{equation}
+
+Equation E2 computes the displacement gradient, which is essential for determining the direction of motion and identifying turning points in the hysteresis curve.
+
+\begin{equation}
+\Delta D_i = D_{i+1} - D_i, \quad i = 1, \ldots, N-1
+\tag{E2}
+\label{eq:E2}
+\end{equation}
+
+Equation E3 determines the sign of each gradient, providing a discrete representation of the direction of motion.
+
+\begin{equation}
+S_i = \text{sign}(\Delta D_i) = 
+\begin{cases}
+1, & \Delta D_i > 0 \\
+0, & \Delta D_i = 0 \\
+-1, & \Delta D_i < 0
+\end{cases}
+\tag{E3}
+\label{eq:E3}
+\end{equation}
+
+Equation E4 identifies turning points where the direction of motion changes, which are critical for extracting the backbone curve and identifying cycles.
+
+\begin{equation}
+T_i = 
+\begin{cases}
+1, & S_i \neq S_{i-1} \\
+0, & \text{otherwise}
+\end{cases}
+\tag{E4}
+\label{eq:E4}
+\end{equation}
+
+\subsection{Envelope Extraction Equations}
+
+The following equations govern the extraction of the monotonic envelope, which forms the basis of the backbone curve. Equation E5 defines the clustering tolerance used to group closely spaced points.
+
+\begin{equation}
+\tau = 0.02 \times \max(|D|)
+\tag{E5}
+\label{eq:E5}
+\end{equation}
+
+Equation E6 identifies the point with the maximum absolute force within each cluster, which is retained as the envelope point.
+
+\begin{equation}
+(\bar{D}_j, \bar{F}_j) = \arg\max_{i \in \text{cluster}_j} |F_i|
+\tag{E6}
+\label{eq:E6}
+\end{equation}
+
+Equation E7 defines the monotonic envelope by retaining only those points where the absolute displacement strictly increases.
+
+\begin{equation}
+\text{Envelope} = \{ (\bar{D}_j, \bar{F}_j) \mid \bar{D}_j > \bar{D}_{j-1} \}
+\tag{E7}
+\label{eq:E7}
+\end{equation}
+
+\subsection{Backbone Curve Equations}
+
+The following equations construct the complete backbone curve from the positive and negative branches. Equation E8 separates the data into positive and negative branches.
+
+\begin{equation}
+P = \{(D_i, F_i) \mid D_i > 0\}, \quad N = \{(D_i, F_i) \mid D_i < 0\}
+\tag{E8}
+\label{eq:E8}
+\end{equation}
+
+Equation E9 extracts the monotonic envelope of the positive branch, while Equation E10 extracts the envelope of the negative branch.
+
+\begin{equation}
+(P_x, P_y) = \text{monotonic\_envelope}(P_x, P_y)
+\tag{E9}
+\label{eq:E9}
+\end{equation}
+
+\begin{equation}
+(N_x, N_y) = \text{monotonic\_envelope}(-N_x, -N_y)
+\tag{E10}
+\label{eq:E10}
+\end{equation}
+
+Equation E11 combines the negative branch, origin, and positive branch to form the complete backbone curve.
+
+\begin{equation}
+B = (N_x, N_y) \cup (0, 0) \cup (P_x, P_y)
+\tag{E11}
+\label{eq:E11}
+\end{equation}
+
+\subsection{Mirroring Equations}
+
+Equation E12 mirrors the negative branch onto the positive quadrant, enabling direct comparison with the positive branch.
+
+\begin{equation}
+M_x = -\text{reverse}(N_x), \quad M_y = -\text{reverse}(N_y)
+\tag{E12}
+\label{eq:E12}
+\end{equation}
+
+\subsection{Average Branch Equations}
+
+The following equations compute the average branch, which is used for bilinear idealization. Equation E13 creates a common grid from the union of both branch displacement values.
+
+\begin{equation}
+G = \text{unique}(P_x \cup M_x)
+\tag{E13}
+\label{eq:E13}
+\end{equation}
+
+Equation E14 interpolates both branches onto the common grid, while Equation E15 computes their average.
+
+\begin{equation}
+P_y^{(G)} = \text{interp}(G, P_x, P_y), \quad M_y^{(G)} = \text{interp}(G, M_x, M_y)
+\tag{E14}
+\label{eq:E14}
+\end{equation}
+
+\begin{equation}
+A_y^{(G)} = \frac{P_y^{(G)} + M_y^{(G)}}{2}
+\tag{E15}
+\label{eq:E15}
+\end{equation}
+
+\subsection{Peak Point Equations}
+
+The following equations identify the peak point of the backbone curve. Equation E16 finds the index of the maximum force, while Equation E17 extracts the corresponding force and displacement values.
+
+\begin{equation}
+i_{\max} = \arg\max y
+\tag{E16}
+\label{eq:E16}
+\end{equation}
+
+\begin{equation}
+F_{\max} = y_{i_{\max}}, \quad D_{\max} = x_{i_{\max}}
+\tag{E17}
+\label{eq:E17}
+\end{equation}
+
+\subsection{Ultimate Point Equations}
+
+The following equations identify the ultimate point according to the ASTM E2126 standard. Equation E18 defines the ultimate force as 80\% of the peak force.
+
+\begin{equation}
+F_u = 0.8 F_{\max}
+\tag{E18}
+\label{eq:E18}
+\end{equation}
+
+Equation E19 interpolates the ultimate displacement from the data points bracketing the 80\% force level.
+
+\begin{equation}
+D_u = x_i + \frac{F_u - y_i}{y_{i+1} - y_i} (x_{i+1} - x_i)
+\tag{E19}
+\label{eq:E19}
+\end{equation}
+
+\subsection{Stiffness Equations}
+
+The following equations compute the initial stiffness of the backbone curve. Equation E20 defines the initial stiffness as the secant stiffness through 40\% of the peak force.
+
+\begin{equation}
+K_e = \frac{0.4 F_{\max}}{D_{0.4}}
+\tag{E20}
+\label{eq:E20}
+\end{equation}
+
+Equation E21 interpolates the displacement at 40\% of the peak force.
+
+\begin{equation}
+D_{0.4} = x_i + \frac{0.4 F_{\max} - y_i}{y_{i+1} - y_i} (x_{i+1} - x_i)
+\tag{E21}
+\label{eq:E21}
+\end{equation}
+
+\subsection{Energy Equations}
+
+Equation E22 computes the area under the backbone curve up to the ultimate point using the trapezoidal rule.
+
+\begin{equation}
+E = \int_0^{D_u} y(x) \, dx \approx \sum_{i=1}^{n-1} \frac{y_i + y_{i+1}}{2} \Delta x_i
+\tag{E22}
+\label{eq:E22}
+\end{equation}
+
+\subsection{EEEP Bilinear Idealization Equations}
+
+The following equations implement the EEEP bilinear idealization. Equation E23 computes the yield force using the equal energy principle.
+
+\begin{equation}
+F_y = K_e D_u - \sqrt{(K_e D_u)^2 - 2 K_e E}
+\tag{E23}
+\label{eq:E23}
+\end{equation}
+
+Equation E24 computes the yield displacement from the yield force and initial stiffness.
+
+\begin{equation}
+D_y = \frac{F_y}{K_e}
+\tag{E24}
+\label{eq:E24}
+\end{equation}
+
+Equation E25 computes the displacement ductility ratio.
+
+\begin{equation}
+\mu = \frac{D_u}{D_y}
+\tag{E25}
+\label{eq:E25}
+\end{equation}
+
+\subsection{Cycle Identification Equations}
+
+The following equations identify individual cycles in the hysteresis data. Equation E26 identifies positive displacement peaks from the turning points.
+
+\begin{equation}
+P_{\text{peak}} = \{ i \mid T_i = 1 \text{ and } D_i > 0 \}
+\tag{E26}
+\label{eq:E26}
+\end{equation}
+
+Equation E27 defines each cycle as the segment of data between consecutive positive peaks.
+
+\begin{equation}
+\text{Cycle}_j = \{ (D_i, F_i) \mid i_{\text{peak},j} \le i \le i_{\text{peak},j+1} \}
+\tag{E27}
+\label{eq:E27}
+\end{equation}
+
+\subsection{Cycle Metrics Equations}
+
+The following equations compute metrics for each identified cycle. Equation E28 computes the secant stiffness for each cycle.
+
+\begin{equation}
+K_j = \frac{F_j^{(+)} - F_j^{(-)}}{D_j^{(+)} - D_j^{(-)}}
+\tag{E28}
+\label{eq:E28}
+\end{equation}
+
+Equation E29 computes the stiffness retention as a percentage of the initial stiffness.
+
+\begin{equation}
+K_{\text{ret},j} = \frac{K_j}{K_1} \times 100\%
+\tag{E29}
+\label{eq:E29}
+\end{equation}
+
+Equation E30 computes the energy dissipated in each cycle using the shoelace formula.
+
+\begin{equation}
+E_j = \frac{1}{2} \left| \sum_{k=1}^{N_j} (D_k F_{k+1} - D_{k+1} F_k) \right|
+\tag{E30}
+\label{eq:E30}
+\end{equation}
+
+Equation E31 computes the cumulative energy dissipation up to each cycle.
+
+\begin{equation}
+E_{\text{cum},j} = \sum_{k=1}^{j} E_k
+\tag{E31}
+\label{eq:E31}
+\end{equation}
+
+\subsection{Plot Generation Equations}
+
+The following equations define the data plotted for each plot type. Equation E32 defines the backbone curve plot data.
+
+\begin{equation}
+\text{Backbone Plot: } (D_i, F_i) \in B
+\tag{E32}
+\label{eq:E32}
+\end{equation}
+
+Equation E33 defines the positive/negative/average plot data.
+
+\begin{equation}
+\text{PNA Plot: } (G_i, P_y^{(G)}), (G_i, M_y^{(G)}), (G_i, A_y^{(G)})
+\tag{E33}
+\label{eq:E33}
+\end{equation}
+
+Equation E34 defines the bilinear idealization plot data.
+
+\begin{equation}
+\text{Bilinear Plot: } (D_y, F_y), (D_u, F_y)
+\tag{E34}
+\label{eq:E34}
+\end{equation}
+
+Equation E35 defines the stiffness degradation plot data.
+
+\begin{equation}
+\text{Stiffness Plot: } (j, K_j) \text{ for } j = 1, \ldots, n
+\tag{E35}
+\label{eq:E35}
+\end{equation}
+
+Equation E36 defines the energy dissipation plot data.
+
+\begin{equation}
+\text{Energy Plot: } (j, E_j) \text{ for } j = 1, \ldots, n
+\tag{E36}
+\label{eq:E36}
+\end{equation}
+
+% ====================================================================
+% CHAPTER 9: USAGE GUIDE
+% ====================================================================
+\section{Usage Guide}
+
+\subsection{Installation}
+
+\subsubsection{Python Installation}
+
+Before installing the application, ensure that Python 3.7 or higher is installed on your system. The required packages can be installed using the pip package manager, as shown in the code listing below:
+
+\begin{lstlisting}
+pip install numpy pandas matplotlib
+\end{lstlisting}
+
+\subsubsection{Download Application}
+
+Download the \texttt{BBCurve.py} file from the developer's GitHub repository or other distribution source and place it in a suitable directory on your system.
+
+\subsubsection{Run Application}
+
+The application can be launched from the command line using Python, as shown below:
+
+\begin{lstlisting}
+python BBCurve.py
+\end{lstlisting}
+
+\subsection{Data Preparation}
+
+\subsubsection{File Format}
+
+The input data must be prepared in the format described in Table~\ref{tab:file_format}. Following this format ensures that the application can correctly parse and process the data.
+
+\begin{table}[h]
+\centering
+\caption{Input File Format Specification}\label{tab:file_format}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Property} & \textbf{Description} \\
+\midrule
+File Extension & .txt (plain text file) \\
+Delimiter & Tab character or any whitespace (space, tab) \\
+Columns & First column: Displacement (mm); Second column: Force (kN) \\
+Header & First row is skipped (can contain column labels) \\
+Data Format & Numeric values with decimal point (e.g., -6.023, 18.157) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Example Input}
+
+A typical input file would look like the example shown below, where each row contains the displacement and force values for a single data point:
+
+\begin{lstlisting}
+Displacement    Force
+-6.023  -18.157
+-5.978  -17.892
+-5.893  -17.865
+-5.723  -17.823
+-5.511  -17.802
+...
+\end{lstlisting}
+
+\subsection{Processing Workflow}
+
+The processing workflow consists of four main steps, which are summarized in Table~\ref{tab:workflow}. Each step is described in detail below.
+
+\begin{table}[h]
+\centering
+\caption{Processing Workflow Steps}\label{tab:workflow}
+\begin{tabular}{p{3cm}p{11cm}}
+\toprule
+\textbf{Step} & \textbf{Action} \\
+\midrule
+1 & Select the input folder containing the TXT files to be processed \\
+2 & Select the output folder where results will be saved \\
+3 & Start the processing by clicking the Process All Files button or pressing Ctrl+R \\
+4 & Monitor the processing progress in the Processing Log tab \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Step 1: Select Input Folder}
+
+Click the \textbf{Choose Input Folder} button in the folder selection panel. A file dialog will appear, allowing you to navigate to and select the directory containing your TXT files. The selected path will be displayed in the input folder text field.
+
+\subsubsection{Step 2: Select Output Folder}
+
+Click the \textbf{Choose Output Folder} button to select the directory where all results (plots, CSV files, and summary) will be saved. The application will automatically create the necessary subdirectories within this folder.
+
+\subsubsection{Step 3: Process Files}
+
+Click the \textbf{Process All TXT Files} button or press \textbf{Ctrl+R} to start the processing. The application will process all TXT files in the input folder sequentially, displaying progress information in the Processing Log tab.
+
+\subsubsection{Step 4: Monitor Progress}
+
+The Processing Log tab provides real-time feedback on the processing progress. Each file is reported with either an OK (green) or FAIL (red) status, and the summary statistics are displayed at the end of the processing run.
+
+\subsection{Result Review}
+
+\subsubsection{Plot Viewer}
+
+The Plot Viewer tab allows you to interactively explore the results for each specimen. Use the specimen dropdown menu or the Previous/Next buttons to navigate between specimens. Select different plot types from the dropdown menu to view various aspects of the cyclic behaviour. Use the zoom, pan, and inspection tools for detailed analysis.
+
+\subsubsection{Engineering Information}
+
+The Engineering Information panel displays key parameters for the selected specimen. These parameters update automatically when you switch specimens or plot types. Click on the plot to inspect individual data points, and the coordinates will be displayed in the panel.
+
+\subsubsection{Summary Table}
+
+The Summary Table tab provides a comprehensive overview of all processed specimens. You can sort the table by clicking on column headers, filter rows using the search box, and highlight maximum and minimum values using the highlight dropdown menu. Double-clicking on a row will switch to the Plot Viewer tab and display the corresponding specimen.
+
+\subsection{Export Results}
+
+The application provides several options for exporting results, as summarized in Table~\ref{tab:export_options}.
+
+\begin{table}[h]
+\centering
+\caption{Export Options Summary}\label{tab:export_options}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Action} & \textbf{Description} \\
+\midrule
+Save Plot & Save the current plot to a file (Ctrl+S) \\
+Export Plot & Export the current plot with format and DPI options (Ctrl+E) \\
+Copy Plot & Copy the current plot image to the clipboard (Ctrl+C) \\
+Export Log & Export the processing log to a text file \\
+Export Summary & Export the summary table to a CSV file \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Export Plot}
+
+Click the \textbf{Save Plot} button or press \textbf{Ctrl+S} to save the current plot. The default format is PNG. Use the \textbf{Export} button or \textbf{Ctrl+E} to access additional format options including SVG and PDF, with adjustable DPI settings for raster formats.
+
+\subsubsection{Copy Plot}
+
+Click the \textbf{Copy to Clipboard} button or press \textbf{Ctrl+C} to copy the current plot image to the system clipboard. This is useful for quickly pasting plots into other applications.
+
+\subsubsection{Export Log}
+
+Use the \textbf{Export Log} button in the Processing Log tab to save the complete processing log to a text file. This is useful for record-keeping and troubleshooting.
+
+\subsubsection{Export Summary}
+
+Use the \textbf{Export Summary Table} option from the File menu or the export buttons in the Summary Table tab to save the summary data to a CSV file. You can choose to export all rows or only the selected rows.
+
+% ====================================================================
+% CHAPTER 10: CONCLUSION
+% ====================================================================
+\section{Conclusion}
+
+\subsection{Summary}
+
+The \textbf{Backbone Curve \& Bilinear Idealization Tool} provides a comprehensive, professional-grade solution for analyzing cyclic hysteresis data according to the ASTM E2126 EEEP method. The application successfully combines robust mathematical processing with an intuitive user interface to deliver a powerful analysis tool for structural engineers and researchers.
+
+The key strengths of the application include:
+
+\begin{itemize}
+    \item \textbf{Robust Mathematical Processing}: Full implementation of all EEEP method calculations with proper handling of edge cases and data quality issues
+    \item \textbf{Professional GUI}: ETABS/SAP2000-style engineering workstation interface with intuitive navigation and comprehensive controls
+    \item \textbf{Interactive Visualization}: High-quality plots with full user interaction including zoom, pan, and data inspection
+    \item \textbf{Data Management}: Comprehensive CSV output and summary generation with sorting, filtering, and highlighting capabilities
+    \item \textbf{User Experience}: Persistent settings, keyboard shortcuts, and intuitive navigation for enhanced productivity
+    \item \textbf{Transparency}: Real-time processing log with detailed feedback and color-coded status indicators
+\end{itemize}
+
+\subsection{Applications}
+
+The tool is suitable for a wide range of applications in structural engineering and research, as summarized in Table~\ref{tab:applications}.
+
+\begin{table}[h]
+\centering
+\caption{Application Areas and Use Cases}\label{tab:applications}
+\begin{tabular}{p{4cm}p{10cm}}
+\toprule
+\textbf{Area} & \textbf{Description of Applications} \\
+\midrule
+Research & Parametric studies of structural behaviour under cyclic loading, development of constitutive models \\
+Education & Teaching structural dynamics, seismic analysis, and experimental methods \\
+Engineering Practice & Performance-based seismic design, capacity assessment of existing structures \\
+Industry & Quality control and acceptance testing of structural components and materials \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Future Developments}
+
+Potential future enhancements to the application include:
+
+\begin{itemize}
+    \item Support for additional cyclic analysis methods beyond the EEEP approach
+    \item Integration with machine learning algorithms for data classification and prediction
+    \item Enhanced statistical analysis capabilities for large datasets
+    \item Automated report generation with customizable templates
+    \item Support for additional file formats including Excel and other standard formats
+    \item API development for integration with other analysis tools and workflows
+    \item Cloud-based processing for very large datasets
+\end{itemize}
+
+\subsection{Final Remarks}
+
+This application represents a significant contribution to the field of structural engineering by providing a standardized, automated, and user-friendly tool for cyclic data analysis. The implementation follows established engineering standards while incorporating modern software design principles to ensure reliability, performance, and usability. The extensive documentation provided in this manual serves as both a user guide and a technical reference for the underlying algorithms and mathematics.
+
+The developer encourages users to explore the full capabilities of the tool and welcomes feedback for future improvements. The application is designed to be extensible and can be adapted to meet specific user requirements as needed.
+
+% ====================================================================
+% APPENDIX A: GLOSSARY
+% ====================================================================
+\appendix
+\section{Glossary of Technical Terms}
+
+\begin{longtable}{p{3cm}p{11cm}}
+\caption{Glossary of Technical Terms Used in This Document}\label{tab:glossary}\\
+\toprule
+\textbf{Term} & \textbf{Definition} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Term} & \textbf{Definition} \\
+\midrule
+\endhead
+Backbone Curve & The envelope of the hysteresis loops, representing the maximum force at each displacement level \\
+Bilinear Idealization & A simplified elastic-perfectly-plastic representation of the backbone curve used for design \\
+Ductility & The ratio of ultimate displacement to yield displacement, \(\mu = D_u/D_y\) \\
+EEEP & Equivalent Energy Elastic-Plastic method, a standard approach for characterizing cyclic behaviour \\
+Hysteresis & The dependence of the force-displacement relationship on the loading history \\
+Hysteresis Loop & A closed path in the force-displacement space representing one complete loading cycle \\
+Initial Stiffness & The secant stiffness through 40\% of the peak force on the ascending branch \\
+Monotonic Envelope & The curve through the local maxima of the response, representing the outermost bounds \\
+Pinching & The narrowing of hysteresis loops due to crack opening and closing mechanisms \\
+Secant Stiffness & The stiffness defined by the slope of the line connecting two points on a hysteresis loop \\
+Stiffness Degradation & The progressive loss of stiffness with increasing number of loading cycles \\
+Ultimate Point & The point at which the force drops to 80\% of the peak force after the peak \\
+Yield Point & The idealized point representing the transition from elastic to perfectly plastic behaviour \\
+\bottomrule
+\end{longtable}
+
+\end{document}
