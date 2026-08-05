@@ -65,9 +65,8 @@
 
 \begin{document}
 
-% ====================================================================
-% TITLE PAGE
-% ====================================================================
+% Title Page
+
 \begin{titlepage}
 \centering
 
@@ -124,21 +123,16 @@
 
 \end{titlepage}
 
-% ====================================================================
-% TABLE OF CONTENTS
-% ====================================================================
+% Table of Contents
+
 \tableofcontents
 \newpage
 
-% ====================================================================
-% LIST OF TABLES
-% ====================================================================
+% List of Table
+
 \listoftables
 \newpage
 
-% ====================================================================
-% CHAPTER 1: INTRODUCTION
-% ====================================================================
 \section{Introduction}
 
 \subsection{Background and Motivation}
@@ -184,9 +178,6 @@ Persistent Settings & Remembers user preferences between sessions for enhanced p
 \end{tabular}
 \end{table}
 
-% ====================================================================
-% CHAPTER 2: THEORETICAL BACKGROUND
-% ====================================================================
 \section{Theoretical Background}
 
 \subsection{Structural Dynamics and Hysteresis}
@@ -416,9 +407,6 @@ K_{\text{ret},j} = \frac{K_j}{K_1} \times 100\%
 
 The progressive reduction in stiffness with increasing cycles is a manifestation of cumulative damage in the structure. This degradation is typically more pronounced in the early cycles and tends to stabilize as the structure reaches a steady-state damage condition.
 
-% ====================================================================
-% CHAPTER 3: SOFTWARE ARCHITECTURE
-% ====================================================================
 \section{Software Architecture and Design}
 
 \subsection{System Architecture}
@@ -555,9 +543,6 @@ Cancel Event & Allows the user to gracefully cancel processing operations at any
 
 The threading model ensures that the GUI remains responsive and interactive even during long processing operations. The worker thread runs in the background, periodically updating the progress bar and log display through the thread-safe log queue. The cancel event mechanism provides a robust way for users to abort processing if needed.
 
-% ====================================================================
-% CHAPTER 4: MATHEMATICAL ALGORITHMS
-% ====================================================================
 \section{Mathematical Algorithms and Implementations}
 
 This chapter provides a comprehensive and detailed description of all mathematical algorithms implemented in the code, with complete explanations of the theoretical foundations and practical implementation details.
@@ -1050,9 +1035,6 @@ E_{\text{cum},j} = \sum_{k=1}^{j} E_k
 \label{eq:cumulative_formula}
 \end{equation}
 
-% ====================================================================
-% CHAPTER 5: GUI IMPLEMENTATION
-% ====================================================================
 \section{GUI Implementation and Features}
 
 \subsection{Layout Structure}
@@ -1242,9 +1224,6 @@ i_{\min} &= \arg\min \text{series}
 \label{eq:highlighting}
 \end{equation}
 
-% ====================================================================
-% CHAPTER 6: OUTPUT GENERATION
-% ====================================================================
 \section{Output Generation and File Formats}
 
 \subsection{Directory Structure}
@@ -1400,9 +1379,6 @@ Final\_Stiffness\_Pct\_of\_Initial & Final stiffness retention as a percentage o
 \bottomrule
 \end{longtable}
 
-% ====================================================================
-% CHAPTER 7: USER PREFERENCES
-% ====================================================================
 \section{User Preferences and Persistence}
 
 \subsection{Preferences Storage}
@@ -1494,9 +1470,6 @@ Ctrl+Q & Exit the application \\
 \bottomrule
 \end{longtable}
 
-% ====================================================================
-% CHAPTER 8: COMPLETE EQUATIONS REFERENCE
-% ====================================================================
 \section{Complete Equations Reference}
 
 This chapter provides a comprehensive listing of all equations implemented in the application, organized by category with sequential numbering for easy reference.
@@ -1966,9 +1939,6 @@ Use the \textbf{Export Log} button in the Processing Log tab to save the complet
 
 Use the \textbf{Export Summary Table} option from the File menu or the export buttons in the Summary Table tab to save the summary data to a CSV file. You can choose to export all rows or only the selected rows.
 
-% ====================================================================
-% CHAPTER 10: CONCLUSION
-% ====================================================================
 \section{Conclusion}
 
 \subsection{Summary}
@@ -2025,9 +1995,6 @@ This application represents a significant contribution to the field of structura
 
 The developer encourages users to explore the full capabilities of the tool and welcomes feedback for future improvements. The application is designed to be extensible and can be adapted to meet specific user requirements as needed.
 
-% ====================================================================
-% APPENDIX A: GLOSSARY
-% ====================================================================
 \appendix
 \section{Glossary of Technical Terms}
 
